@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Applied Foodies</title>
+<link rel="icon" href="data:image/svg+xml,<svg viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'> <defs><linearGradient id='lgPin' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ff7a59'/><stop offset='1' stop-color='%23ff3d5a'/></linearGradient></defs> <path d='M24 46.5S41 30.6 41 18.5A17 17 0 0 0 7 18.5C7 30.6 24 46.5 24 46.5z' fill='url(%23lgPin)'/> <circle cx='24' cy='18.5' r='12.2' fill='%23fff'/> <path d='M19.2 10.6c-1.2 1.3 1.2 2.4 0 3.7M24 9.4c-1.2 1.3 1.2 2.4 0 3.7M28.8 10.6c-1.2 1.3 1.2 2.4 0 3.7' stroke='%2300b39f' stroke-width='1.5' fill='none' stroke-linecap='round'/> <path d='M30.5 6.8 23.6 16.4M33.4 8.2 26 17' stroke='%231d2333' stroke-width='1.6' stroke-linecap='round'/> <path d='M14.6 17.2h18.8a9.4 8.4 0 0 1-18.8 0z' fill='%23ffb81c'/> <path d='M17.4 19.6q1.6 1.2 3.2 0t3.2 0 3.2 0 3.2 0' stroke='%23fff' stroke-width='1.2' fill='none' stroke-linecap='round' opacity='.9'/> <rect x='21.4' y='25.4' width='5.2' height='1.6' rx='.8' fill='%23e09600'/> </svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
@@ -34,8 +35,11 @@ img{max-width:100%}
 .bar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .bar .wrap{display:flex;align-items:center;gap:16px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin-right:auto}
-.brand svg{width:40px;height:40px;flex:none}
-.brand b{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.01em}
+.brand svg{width:46px;height:46px;flex:none;filter:drop-shadow(0 3px 4px rgba(255,61,90,.25));transition:transform .2s}
+.brand:hover svg{transform:rotate(-8deg) scale(1.05)}
+.wm{display:flex;flex-direction:column;line-height:1}
+.wm small{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-top:4px}
+.brand b{font-family:var(--font-display);font-size:25px;font-weight:700;letter-spacing:-.01em;line-height:1}
 .brand b span{color:var(--coral)}
 .nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:4px}
 .nav a{padding:7px 16px;border-radius:99px;text-decoration:none;color:var(--muted);font-weight:700;font-size:14px}
@@ -122,8 +126,36 @@ img{max-width:100%}
 .socm .sq svg{width:20px;height:20px}
 .socm .lb{font-family:var(--font-map);font-weight:700;font-size:13.5px;color:#174ea6;text-shadow:-2px 0 #fff,2px 0 #fff,0 -2px #fff,0 2px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff;line-height:1.15;text-align:left}
 .socm .lb small{display:block;font-weight:500;font-size:11.5px;color:#3c4043}
-.movr{position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:#fff;border:3px solid var(--gblue);display:grid;place-items:center;box-shadow:var(--shadow);pointer-events:none}
-.movr svg{width:18px;height:18px}
+.movr{position:absolute;left:0;top:0;width:68px;height:68px;margin:-60px 0 0 -34px;pointer-events:none;z-index:4}
+.movr .fig{width:68px;height:68px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3));transition:transform .25s}
+.movr .fig.flip{transform:scaleX(-1)}
+.movr .fig svg{width:68px;height:68px;display:block}
+.movr .mb{position:absolute;right:-6px;bottom:2px;width:24px;height:24px;border-radius:50%;background:#fff;border:2.5px solid var(--gblue);display:grid;place-items:center;box-shadow:var(--shadow)}
+.movr .mb svg{width:13px;height:13px}
+.af-leg1{animation:afLeg .5s ease-in-out infinite alternate}
+.af-leg2{animation:afLeg .5s ease-in-out infinite alternate-reverse}
+.af-arm1{animation:afArm .5s ease-in-out infinite alternate}
+.af-arm2{animation:afArm .5s ease-in-out infinite alternate-reverse}
+.af-bob{animation:afBob .5s ease-in-out infinite alternate}
+.af-spin{animation:afSpin .7s linear infinite}
+.af-pedal{animation:afSpin .9s linear infinite}
+@keyframes afLeg{from{transform:rotate(-22deg)}to{transform:rotate(22deg)}}
+@keyframes afArm{from{transform:rotate(25deg)}to{transform:rotate(-25deg)}}
+@keyframes afBob{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+@keyframes afSpin{to{transform:rotate(360deg)}}
+.avb{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;align-items:start;border:1.5px dashed var(--line);border-radius:16px;padding:12px;background:#fffaf5}
+.avprev{width:120px;height:120px;border-radius:16px;background:linear-gradient(180deg,#dff2ff,#c9ecc2);display:grid;place-items:center;overflow:hidden}
+.avprev svg{width:110px;height:110px}
+.avrow{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.avrow > span{font-size:12px;font-weight:800;color:var(--muted)}
+.sw{display:flex;gap:6px;flex-wrap:wrap}
+.sw button{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--line);cursor:pointer;padding:0}
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
+.sw .tx{width:auto;border-radius:99px;padding:0 10px;font-size:12px;font-weight:700;background:#fff;height:28px}
+.sw .tx[aria-pressed="true"]{background:var(--ink);color:#fff}
+.mini{width:24px;height:24px;border-radius:50%;background:#dff2ff;display:inline-grid;place-items:center;overflow:hidden;vertical-align:middle;margin-right:6px}
+.mini svg{width:30px;height:30px;margin-top:6px}
+@media (prefers-reduced-motion:reduce){.af-leg1,.af-leg2,.af-arm1,.af-arm2,.af-bob,.af-spin,.af-pedal{animation:none}}
 .eta{position:absolute;left:0;top:0;pointer-events:none;background:#fff;border-radius:10px;box-shadow:var(--shadow);padding:6px 10px;font-family:var(--font-map);font-size:13px;white-space:nowrap;transform:translate(-50%,-130%)}
 .eta b{color:#188038;font-size:14px}
 .eta::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#fff}
@@ -332,13 +364,17 @@ label.f textarea{min-height:84px;resize:vertical}
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="#map" aria-label="Applied Foodies home">
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <path d="M20 38s13-12.2 13-22A13 13 0 0 0 7 16c0 9.8 13 22 13 22z" fill="#ff5a4f"/>
-        <circle cx="20" cy="16" r="9" fill="#fff"/>
-        <path d="M16 11v5.2a1.8 1.8 0 0 0 1.8 1.8v4M16 11v3M18 11v3M19.6 11v5.2A1.8 1.8 0 0 1 17.8 18" stroke="#ff5a4f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <path d="M23.5 22v-11c-1.6.6-2.3 2.6-2.3 5 0 1.4.9 2 2.3 2" stroke="#ffb81c" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <defs><linearGradient id="lgPin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a59"/><stop offset="1" stop-color="#ff3d5a"/></linearGradient></defs>
+        <path d="M24 46.5S41 30.6 41 18.5A17 17 0 0 0 7 18.5C7 30.6 24 46.5 24 46.5z" fill="url(#lgPin)"/>
+        <circle cx="24" cy="18.5" r="12.2" fill="#fff"/>
+        <path d="M19.2 10.6c-1.2 1.3 1.2 2.4 0 3.7M24 9.4c-1.2 1.3 1.2 2.4 0 3.7M28.8 10.6c-1.2 1.3 1.2 2.4 0 3.7" stroke="#00b39f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M30.5 6.8 23.6 16.4M33.4 8.2 26 17" stroke="#1d2333" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M14.6 17.2h18.8a9.4 8.4 0 0 1-18.8 0z" fill="#ffb81c"/>
+        <path d="M17.4 19.6q1.6 1.2 3.2 0t3.2 0 3.2 0 3.2 0" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".9"/>
+        <rect x="21.4" y="25.4" width="5.2" height="1.6" rx=".8" fill="#e09600"/>
       </svg>
-      <b>Applied <span>Foodies</span></b>
+      <span class="wm"><b>Applied <span>Foodies</span></b><small>lunch · stories · friends</small></span>
     </a>
     <nav class="nav" aria-label="Pages">
       <a href="#map" id="navMap" aria-current="page">Map</a>
@@ -500,6 +536,17 @@ label.f textarea{min-height:84px;resize:vertical}
   <form method="dialog">
     <h2 id="acctTitle">Your account</h2>
     <p id="acctText" style="margin:0"></p>
+    <div class="avb" id="avBuilder" hidden>
+      <div><div class="avprev" id="avPrev"></div><p class="fine" style="margin-top:6px;text-align:center">Rides the route on the map</p></div>
+      <div>
+        <div class="avrow"><span>Skin</span><div class="sw" id="swSkin"></div></div>
+        <div class="avrow"><span>Hair</span><div class="sw" id="swHair"></div></div>
+        <div class="avrow"><span>Hair colour</span><div class="sw" id="swHairC"></div></div>
+        <div class="avrow"><span>Shirt</span><div class="sw" id="swShirt"></div></div>
+        <div class="avrow"><span>Extras</span><div class="sw" id="swExtra"></div></div>
+        <button class="btn primary small" type="button" id="avSave">Save my character</button>
+      </div>
+    </div>
     <label class="f" for="acctUid">Your editor ID <span class="hint">To become an editor, send this ID to the page owner.</span><input id="acctUid" readonly></label>
     <div class="formfoot" style="justify-content:flex-end">
       <button class="btn" type="button" id="acctCopy">Copy ID</button>
@@ -553,7 +600,7 @@ const ICON_FORK='<svg viewBox="0 0 24 24" fill="none" stroke="#ff5a4f" stroke-wi
 
 /* ================= state ================= */
 const S={lunches:[],ratings:[],selected:null,area:"all",q:"",sort:"new",mode:"transit",origin:"soc",page:"map",
-  picking:false,db:null,user:null,assets:null,canWrite:null,myId:null,live:"connecting",editing:null,pickedLoc:null,photoFile:null};
+  avatars:{},picking:false,db:null,user:null,assets:null,canWrite:null,myId:null,live:"connecting",editing:null,pickedLoc:null,photoFile:null};
 
 /* ================= geo helpers ================= */
 const LON0=103.82,LAT0=1.35;
@@ -808,6 +855,79 @@ function roadRoute(spot){
 }
 function estimate(spot,mode){const r=roadRoute(spot);const m=MODES[mode];return {km:r.km,min:Math.max(2,Math.round(r.km/m.speed*60+m.fixed))};}
 
+
+/* ================= cartoon characters ================= */
+const AV={skin:["#ffe0c7","#f6c49c","#dea072","#b7764a","#86522f"],hairC:["#2a1c15","#5b3a21","#a46a30","#e2b44c","#c84e3c","#5d6175"],
+  hair:["short","spiky","long","bun","cap"],shirt:["#ff5a4f","#ffb81c","#00b39f","#2f8cff","#7c5cff","#1d2333"]};
+function hashStr(t){let h=7;for(const c of String(t||"x"))h=(h*31+c.charCodeAt(0))>>>0;return h;}
+function defaultAvatar(seed){const h=hashStr(seed);return {skin:h%5,hair:AV.hair[(h>>3)%4],hairC:(h>>6)%5,shirt:(h>>9)%6,glasses:((h>>12)%3)===0};}
+function normAv(a,seed){const d=defaultAvatar(seed);a=a||{};return {skin:a.skin>=0&&a.skin<5?a.skin:d.skin,hair:AV.hair.includes(a.hair)?a.hair:d.hair,hairC:a.hairC>=0&&a.hairC<6?a.hairC:d.hairC,shirt:a.shirt>=0&&a.shirt<6?a.shirt:d.shirt,glasses:typeof a.glasses==="boolean"?a.glasses:d.glasses};}
+function avHead(cx,cy,r,a){
+  const sk=AV.skin[a.skin],hc=AV.hairC[a.hairC];let back="",front="";
+  if(a.hair==="long")back=`<path d="M${cx-r*1.05} ${cy} Q${cx-r*1.15} ${cy+r*1.25} ${cx-r*.55} ${cy+r*1.2} L${cx+r*.55} ${cy+r*1.2} Q${cx+r*1.15} ${cy+r*1.25} ${cx+r*1.05} ${cy} Z" fill="${hc}"/>`;
+  if(a.hair==="bun")back=`<circle cx="${cx}" cy="${cy-r*1.05}" r="${r*.45}" fill="${hc}"/>`;
+  if(a.hair==="short"||a.hair==="long"||a.hair==="bun")front=`<path d="M${cx-r} ${cy+r*.05} A${r} ${r} 0 0 1 ${cx+r} ${cy+r*.05} Q${cx+r*.55} ${cy-r*.62} ${cx-r*.05} ${cy-r*.42} Q${cx-r*.6} ${cy-r*.25} ${cx-r} ${cy+r*.05} Z" fill="${hc}"/>`;
+  if(a.hair==="spiky")front=`<path d="M${cx-r} ${cy} L${cx-r*.85} ${cy-r*.95} L${cx-r*.45} ${cy-r*.62} L${cx-r*.2} ${cy-r*1.25} L${cx+r*.12} ${cy-r*.7} L${cx+r*.45} ${cy-r*1.2} L${cx+r*.62} ${cy-r*.62} L${cx+r*1.02} ${cy-r*.8} L${cx+r} ${cy} Q${cx} ${cy-r*.5} ${cx-r} ${cy} Z" fill="${hc}"/>`;
+  if(a.hair==="cap")front=`<path d="M${cx-r} ${cy-r*.05} A${r} ${r} 0 0 1 ${cx+r} ${cy-r*.05} Z" fill="#ff5a4f"/><path d="M${cx+r*.2} ${cy-r*.12} H${cx+r*1.55} Q${cx+r*1.6} ${cy+r*.12} ${cx+r*1.3} ${cy+r*.12} H${cx+r*.2} Z" fill="#e0392f"/><circle cx="${cx-r*.15}" cy="${cy-r*.98}" r="${r*.14}" fill="#e0392f"/>`;
+  const ey=cy+r*.18,ex=r*.36,er=Math.max(1,r*.12);
+  const glasses=a.glasses?`<g fill="none" stroke="#1d2333" stroke-width="${Math.max(1,r*.11)}"><circle cx="${cx-ex}" cy="${ey}" r="${r*.27}"/><circle cx="${cx+ex}" cy="${ey}" r="${r*.27}"/><path d="M${cx-ex+r*.27} ${ey} H${cx+ex-r*.27}"/></g>`:"";
+  return back+`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${sk}"/>`+
+    `<circle cx="${cx-r*.62}" cy="${cy+r*.48}" r="${r*.16}" fill="#ff8f86" opacity=".55"/><circle cx="${cx+r*.62}" cy="${cy+r*.48}" r="${r*.16}" fill="#ff8f86" opacity=".55"/>`+
+    `<circle cx="${cx-ex}" cy="${ey}" r="${er}" fill="#1d2333"/><circle cx="${cx+ex}" cy="${ey}" r="${er}" fill="#1d2333"/>`+
+    `<path d="M${cx-r*.28} ${cy+r*.52} Q${cx} ${cy+r*.8} ${cx+r*.28} ${cy+r*.52}" stroke="#1d2333" stroke-width="${Math.max(1,r*.1)}" fill="none" stroke-linecap="round"/>`+glasses+front;
+}
+function avatarScene(a,mode,anim){
+  const sk=AV.skin[a.skin],sh=AV.shirt[a.shirt],pants="#3a4256",A=c=>anim===false?"":` class="${c}"`;
+  if(mode==="walking"){
+    return `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="61" rx="13" ry="2.5" fill="rgba(0,0,0,.18)"/>
+      <g${A("af-leg1")} style="transform-origin:29px 43px"><path d="M29 43 L28 57" stroke="${pants}" stroke-width="5.5" stroke-linecap="round"/><ellipse cx="30" cy="58.5" rx="4.2" ry="2.2" fill="#1d2333"/></g>
+      <g${A("af-leg2")} style="transform-origin:35px 43px"><path d="M35 43 L36 57" stroke="${pants}" stroke-width="5.5" stroke-linecap="round"/><ellipse cx="38" cy="58.5" rx="4.2" ry="2.2" fill="#1d2333"/></g>
+      <g${A("af-bob")}>
+      <g${A("af-arm2")} style="transform-origin:25px 30px"><path d="M25 30 L22 41" stroke="${sh}" stroke-width="5" stroke-linecap="round"/><circle cx="21.7" cy="42.5" r="2.4" fill="${sk}"/></g>
+      <rect x="23" y="26" width="18" height="19" rx="7" fill="${sh}"/><path d="M28 26 L32 31 L36 26" stroke="#fff" stroke-width="1.6" fill="none" opacity=".8"/>
+      <rect x="34" y="33" width="4" height="5" rx="1" fill="#fff" opacity=".9"/>
+      <g${A("af-arm1")} style="transform-origin:39px 30px"><path d="M39 30 L42 41" stroke="${sh}" stroke-width="5" stroke-linecap="round"/><circle cx="42.3" cy="42.5" r="2.4" fill="${sk}"/></g>
+      ${avHead(32,15,10,a)}</g></svg>`;
+  }
+  if(mode==="bicycling"){
+    const wheel=(x)=>`<g transform="translate(${x} 52)"><circle r="9" fill="none" stroke="#2b3142" stroke-width="3"/><g${A("af-spin")}><path d="M-8 0H8M0 -8V8M-5.6 -5.6L5.6 5.6M-5.6 5.6L5.6 -5.6" stroke="#8a93a6" stroke-width="1"/></g><circle r="1.6" fill="#2b3142"/></g>`;
+    return `<svg viewBox="0 0 64 64">${wheel(14)}${wheel(50)}
+      <path d="M14 52 L25 39 H43 L50 52 M25 39 L31 52 L43 39 M43 39 L45 31 H49" stroke="#00b39f" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 36 H29" stroke="#1d2333" stroke-width="3" stroke-linecap="round"/>
+      <g${A("af-pedal")} style="transform-origin:31px 52px"><path d="M31 52 L31 46" stroke="${pants}" stroke-width="4.5" stroke-linecap="round"/></g>
+      <g${A("af-bob")}>
+      <path d="M26 35 Q29 44 31 47" stroke="${pants}" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+      <path d="M24 35 Q27 24 35 21" stroke="${sh}" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M34 24 L46 31" stroke="${sh}" stroke-width="4.5" stroke-linecap="round"/><circle cx="47" cy="31" r="2.3" fill="${sk}"/>
+      ${avHead(38,13,9,a)}</g></svg>`;
+  }
+  if(mode==="driving"){
+    return `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="60" rx="26" ry="2.5" fill="rgba(0,0,0,.18)"/><g${A("af-bob")}>
+      <path d="M14 33 L21 20 Q22 18 24 18 H41 Q43 18 44.5 20 L52 33 Z" fill="#ff5a4f"/>
+      <path d="M18.5 32 L24 22 H31 V32 Z M34 32 V22 H41 L47.5 32 Z" fill="#cfe9ff"/>
+      ${avHead(39.5,26.5,6.6,a)}
+      <path d="M34 22 V32 M31 22 V32" stroke="#ff5a4f" stroke-width="3"/>
+      <rect x="4" y="31" width="56" height="18" rx="8" fill="#ff5a4f"/><rect x="4" y="38" width="56" height="3.5" fill="#e0392f"/>
+      <circle cx="56.5" cy="35.5" r="2.3" fill="#fff4b0"/><rect x="5" y="34" width="4" height="3" rx="1" fill="#ffb81c"/></g>
+      ${[16,48].map(x=>`<g transform="translate(${x} 50)"><circle r="7" fill="#2b3142"/><circle r="3" fill="#c9ced8"/></g>`).join("")}</svg>`;
+  }
+  // transit: bus
+  return `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="60" rx="28" ry="2.5" fill="rgba(0,0,0,.18)"/><g${A("af-bob")}>
+    <rect x="2" y="12" width="60" height="40" rx="8" fill="#1a73e8"/><rect x="2" y="40" width="60" height="5" fill="#ffb81c"/>
+    <rect x="7" y="18" width="11" height="13" rx="2.5" fill="#cfe9ff"/><rect x="21" y="18" width="11" height="13" rx="2.5" fill="#cfe9ff"/>
+    <rect x="35" y="18" width="11" height="13" rx="2.5" fill="#cfe9ff"/>
+    <rect x="49" y="16" width="10" height="20" rx="2.5" fill="#cfe9ff"/>
+    <clipPath id="busWin"><rect x="35" y="18" width="11" height="13" rx="2.5"/></clipPath>
+    <g clip-path="url(#busWin)"><rect x="36" y="27" width="9" height="8" rx="3" fill="${sh}"/>${avHead(40.5,24.5,4.6,a)}</g>
+    <rect x="50.5" y="38" width="7" height="2" rx="1" fill="#fff4b0"/></g>
+    ${[15,49].map(x=>`<g transform="translate(${x} 52)"><circle r="6.5" fill="#2b3142"/><circle r="2.8" fill="#c9ced8"/></g>`).join("")}</svg>`;
+}
+function avatarFor(l){
+  const uid=l&&l.createdBy;let a=uid&&S.avatars[uid];
+  if(!a&&S.isEditor&&S.myId)a=S.avatars[S.myId];
+  return normAv(a,uid||S.myId||"applied");
+}
+function miniHead(a){return `<span class="mini"><svg viewBox="0 0 32 32">${avHead(16,14,10,a)}<rect x="6" y="26" width="20" height="10" rx="5" fill="${AV.shirt[a.shirt]}"/></svg></span>`;}
 /* ================= markers ================= */
 const markerEls=new Map();let socEl=null,movEl=null,etaEl=null,animT0=performance.now(),routeLen=null;
 function scoreClass(v){return v==null?"b-none":v>=8?"b-hi":v>=6?"b-mid":"b-lo";}
@@ -845,7 +965,9 @@ function positionMarkers(){
     const est=estimate(l,S.mode);
     etaEl.innerHTML=`<b>${fmtMin(est.min)}</b> · ${est.km.toFixed(1)} km`;
     const mid=pointAlong(r.pts,0.5);const [ex,ey]=MAP.toScreen(mid[0],mid[1]);etaEl.style.left=ex+"px";etaEl.style.top=ey+"px";etaEl.style.display="";
-    if(movEl.dataset.mode!==S.mode){movEl.dataset.mode=S.mode;movEl.style.borderColor=m.color;movEl.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="${m.color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg>`;}
+    const av=avatarFor(l);const sig=S.mode+"|"+JSON.stringify(av);
+    if(movEl.dataset.sig!==sig){movEl.dataset.sig=sig;
+      movEl.innerHTML=`<div class="fig">${avatarScene(av,S.mode,!reduceMotion)}</div><span class="mb" style="border-color:${m.color}"><svg viewBox="0 0 24 24" fill="none" stroke="${m.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg></span>`;}
     moveMover();movEl.style.display="";
   } else { if(etaEl)etaEl.style.display="none"; if(movEl)movEl.style.display="none"; }
 }
@@ -859,6 +981,8 @@ function moveMover(){
   const period=Math.max(4000,Math.min(9000,r.pts.__len*120||6000));
   const t=reduceMotion?0.25:((performance.now()-animT0)%period)/period;
   const p=pointAlong(r.pts,t);const [x,y]=MAP.toScreen(p[0],p[1]);movEl.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+  const q=pointAlong(r.pts,Math.min(1,t+0.012));const dx=q[0]-p[0];const fig=movEl.firstElementChild;
+  if(fig&&Math.abs(dx)>1e-6){const left=dx<0;if(fig.classList.contains("flip")!==left)fig.classList.toggle("flip",left);}
 }
 (function loop(){ if(!reduceMotion&&S.selected&&S.page==="map")moveMover(); requestAnimationFrame(loop); })();
 MAP.hooks.afterDraw=positionMarkers;
@@ -1195,14 +1319,32 @@ async function signIn(){
   try{await FB.au.signInWithPopup(FB.auth,new FB.au.GoogleAuthProvider());}
   catch(err){if(err&&err.code!=="auth/popup-closed-by-user"&&err.code!=="auth/cancelled-popup-request")toast("Couldn't sign in. Allow pop-ups for this site and try again.");}
 }
+let avDraft=null;
+function swatches(id,list,key,isColor){$(id).innerHTML=list.map((v,i)=>{const val=isColor?i:v;const on=avDraft[key]===val;
+  return isColor?`<button type="button" aria-label="${key} ${i+1}" aria-pressed="${on}" style="background:${v}" data-k="${key}" data-v="${i}"></button>`
+    :`<button type="button" class="tx" aria-pressed="${on}" data-k="${key}" data-v="${v}">${v[0].toUpperCase()+v.slice(1)}</button>`;}).join("");}
+function renderBuilder(){
+  swatches("swSkin",AV.skin,"skin",true);swatches("swHair",AV.hair,"hair",false);swatches("swHairC",AV.hairC,"hairC",true);swatches("swShirt",AV.shirt,"shirt",true);
+  $("swExtra").innerHTML=`<button type="button" class="tx" aria-pressed="${avDraft.glasses}" data-k="glasses">Glasses</button>`;
+  $("avPrev").innerHTML=avatarScene(avDraft,"walking",!reduceMotion);
+}
+$("avBuilder").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b)return;const k=b.dataset.k;
+  if(k==="glasses")avDraft.glasses=!avDraft.glasses;else if(k==="hair")avDraft.hair=b.dataset.v;else avDraft[k]=+b.dataset.v;renderBuilder();});
+$("avSave").onclick=async()=>{if(!S.db||!S.myId)return;const btn=$("avSave");btn.disabled=true;
+  try{await S.db.doc("avatars/"+S.myId).set(Object.assign({},avDraft,{updatedAt:Date.now()}));S.avatars[S.myId]=Object.assign({},avDraft);renderAuth();if(movEl)movEl.dataset.sig="";positionMarkers();toast("Character saved! Pick a lunch to watch it ride.");}
+  catch(err){toast(err&&err.code==="permission-denied"?"Couldn't save. Update your Firestore rules to include avatars (see the README).":"Couldn't save. "+friendly(err));}
+  finally{btn.disabled=false;}};
 function openAcct(){const u=S.authUser;if(!u)return;
+  $("avBuilder").hidden=!S.isEditor;if(S.isEditor){avDraft=normAv(S.avatars[u.uid],u.uid);renderBuilder();}
   $("acctText").textContent=(u.displayName||u.email||"Signed in")+(S.isEditor?" · Editor: you can log, edit and delete lunches.":" · You can add scores. Only editors can log lunches.");
   $("acctUid").value=u.uid;$("acctDlg").showModal();}
 $("acctCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("acctUid").value);toast("Editor ID copied");}catch(_){$("acctUid").select();toast("Press Ctrl+C to copy");}};
 $("acctOut").onclick=async()=>{try{await FB.au.signOut(FB.auth);}catch(_){}$("acctDlg").close();toast("Signed out");};
 $("authBtn").onclick=()=>S.authUser?openAcct():signIn();
 function renderAuth(){const b=$("authBtn");const u=S.authUser;
-  b.textContent=u?((u.displayName||u.email||"Account").split(" ")[0]+(S.isEditor?" · Editor":"")):"Sign in";}
+  if(!u){b.textContent="Sign in";return;}
+  const name=esc((u.displayName||u.email||"Account").split(" ")[0]);
+  b.innerHTML=(S.isEditor?miniHead(normAv(S.avatars[u.uid],u.uid)):"")+name+(S.isEditor?" · Editor":"");}
 async function start(){
   const cfg=window.FIREBASE_CONFIG;
   if(!cfg||!cfg.apiKey){S.setupNeeded=true;setLive("unavailable");renderAll();return;}
@@ -1238,6 +1380,7 @@ async function start(){
     if(S.selected&&!S.lunches.find(x=>x.id===S.selected))S.selected=null;
     const typing=document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#rateForm");
     renderChips();syncMarkers();updateRoute();if(!typing)renderPanel();if(S.page==="journey")renderJourney();if(S.page==="trail")renderTrail();},onErr);
+  S.db.collection("avatars").onSnapshot(snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.avatars=m;renderAuth();if(movEl)movEl.dataset.sig="";positionMarkers();},err=>console.warn("avatars",err));
   S.db.collection("ratings").onSnapshot(snap=>{S.ratings=snap.docs.map(d=>Object.assign({id:d.id},d.data()));got.r=true;check();
     const typing=document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#rateForm");
     syncMarkers();if(!typing)renderPanel();if(S.page==="journey")renderJourney();if(S.page==="trail")renderTrail();},onErr);

@@ -21,6 +21,9 @@ service cloud.firestore {
       allow delete: if isEditor() || (signedIn() && resource.data.createdBy == request.auth.uid);
     }
 
+    // Each editor's cartoon character; everyone can see it, only that editor can change it.
+    match /avatars/{uid} { allow read: if true; allow write: if isEditor() && request.auth.uid == uid; }
+
     // Editors are added by hand in the Firebase console: a document whose ID is the person's editor ID.
     match /editors/{uid} { allow read: if signedIn() && request.auth.uid == uid; }
   }
