@@ -276,6 +276,18 @@ label.f input,label.f select,label.f textarea{font-weight:500;padding:9px 11px;b
 label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--sky);outline:none;background:#fff}
 label.f textarea{min-height:84px;resize:vertical}
 .hint{font-weight:500;color:var(--muted);font-size:12px}
+.finder{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#fff3e6,#ffe9e4);border:1.5px solid #ffd4c4}
+.finder .frow{display:flex;gap:8px}
+.finder input{flex:1;min-width:0;font-weight:600;padding:11px 12px;border:1.5px solid #ffc9b6;border-radius:11px;background:#fff;font-size:15px}
+.finder input:focus{border-color:var(--sky);outline:none}
+.fres{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow:auto}
+.fres button{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid transparent;background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:14px}
+.fres button:hover,.fres button:focus{border-color:var(--coral);outline:none}
+.fres button b{display:block}
+.fres button small{color:var(--muted);display:block}
+.fres .pc{flex:none;background:var(--sun);border-radius:8px;padding:2px 7px;font-weight:800;font-size:12px;font-variant-numeric:tabular-nums}
+.fstatus{font-size:12.5px;color:var(--muted);margin:0;min-height:1em}
+.fstatus.ok{color:#0b7a43;font-weight:700}
 .locrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px;border:1.5px dashed #f2cdb9;border-radius:12px;background:#fffaf6}
 .locrow code{font-size:13px;background:#fff;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
 .formfoot{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
@@ -423,7 +435,15 @@ label.f textarea{min-height:84px;resize:vertical}
 <dialog id="lunchDlg" aria-labelledby="lunchDlgTitle">
   <form id="lunchForm" method="dialog" novalidate>
     <h2 id="lunchDlgTitle">Log a lunch</h2>
-    <label class="f" for="fPreset">Quick fill from a known spot <span class="hint">Optional. Fills the name, area, address and the pin.</span>
+    <div class="finder">
+      <label class="f" for="fFind" style="gap:2px">Find the place <span class="hint">Type a postal code (e.g. 500002) or a place name, then pick a result. Fills the address, pin and area for you.</span></label>
+      <div class="frow"><input id="fFind" inputmode="search" autocomplete="off" placeholder="Postal code or place name">
+        <button class="btn small" type="button" id="fFindBtn">Search</button></div>
+      <p class="fstatus" id="fFindStatus" role="status"></p>
+      <div class="fres" id="fFindRes" role="listbox" aria-label="Search results"></div>
+    </div>
+    <label class="f" for="fPreset">Or quick fill from a popular spot
+
       <select id="fPreset"><option value="">Choose a place…</option></select>
     </label>
     <div class="grid2">
@@ -1047,6 +1067,47 @@ $("fArea").innerHTML=AREAS.map(a=>`<option>${a}</option>`).join("");
 $("fPreset").innerHTML+=PRESETS.map((p,i)=>`<option value="${i}">${esc(p[0])}</option>`).join("");
 $("fPreset").onchange=e=>{const p=PRESETS[+e.target.value];if(!p)return;$("fName").value=p[0];$("fArea").value=p[1];$("fAddr").value=p[4];S.pickedLoc={lat:p[2],lng:p[3]};showLoc();};
 function showLoc(){$("fLoc").textContent=S.pickedLoc?`${S.pickedLoc.lat.toFixed(4)}, ${S.pickedLoc.lng.toFixed(4)}`:"not set";}
+/* --- postal code / place search via OneMap (Singapore Land Authority) --- */
+const AREA_CENTRES={"Bedok":[1.3240,103.9300],"Tampines":[1.3530,103.9450],"Simei":[1.3430,103.9530],"Pasir Ris":[1.3730,103.9490],"Loyang":[1.3700,103.9700],"Changi Village":[1.3890,103.9880],"Changi Airport":[1.3600,103.9900],"Changi Business Park":[1.3340,103.9630],"Tanah Merah":[1.3270,103.9465],"Upper Changi":[1.3420,103.9614]};
+function guessArea(lat,lng){let best="Other",bd=3.2;for(const [a,[la,ln]] of Object.entries(AREA_CENTRES)){const d=km({lat,lng},{lat:la,lng:ln});if(d<bd){bd=d;best=a;}}return best;}
+const titleCase=t=>String(t||"").toLowerCase().replace(/\b([a-z])/g,c=>c.toUpperCase()).replace(/\bSt\b/g,"St").replace(/\b(Blk)\b/g,"Blk");
+let findSeq=0,findTimer=null,findResults=[];
+async function oneMapSearch(q){
+  const qs="searchVal="+encodeURIComponent(q)+"&returnGeom=Y&getAddrDetails=Y&pageNum=1";
+  const urls=["https://www.onemap.gov.sg/api/common/elastic/search?"+qs,"https://www.onemap.gov.sg/api/common/v2.1/search?"+qs.replace("getAddrDetails","getAddrInfo")];
+  let lastErr;
+  for(const u of urls){try{const r=await fetch(u);if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();if(Array.isArray(j.results))return j.results;throw new Error("bad response");}catch(e){lastErr=e;}}
+  throw lastErr;
+}
+async function runFind(){
+  const q=$("fFind").value.trim();const st=$("fFindStatus"),box=$("fFindRes");st.classList.remove("ok");
+  if(q.length<2){st.textContent="";box.innerHTML="";return;}
+  const seq=++findSeq;st.textContent="Searching…";
+  try{
+    const res=await oneMapSearch(q);if(seq!==findSeq)return;
+    const seen=new Set();findResults=res.filter(r=>{const k=r.ADDRESS||r.SEARCHVAL;if(seen.has(k))return false;seen.add(k);return r.LATITUDE&&r.LONGITUDE;}).slice(0,8);
+    if(!findResults.length){st.textContent=/^\d{6}$/.test(q)?"No place found for that postal code. Check the 6 digits.":"No matches. Try the postal code or a shorter name.";box.innerHTML="";return;}
+    st.textContent=findResults.length+" result"+(findResults.length>1?"s":"")+". Pick the right one:";
+    box.innerHTML=findResults.map((r,i)=>{const bld=r.BUILDING&&r.BUILDING!=="NIL"?titleCase(r.BUILDING):"";const street=titleCase([r.BLK_NO&&r.BLK_NO!=="NIL"?r.BLK_NO:"",r.ROAD_NAME&&r.ROAD_NAME!=="NIL"?r.ROAD_NAME:""].join(" ").trim());
+      return `<button type="button" role="option" data-i="${i}">${r.POSTAL&&r.POSTAL!=="NIL"?`<span class="pc">${esc(r.POSTAL)}</span>`:""}<span><b>${esc(bld||titleCase(r.SEARCHVAL))}</b><small>${esc(street||titleCase(r.ADDRESS))}</small></span></button>`;}).join("");
+    box.querySelectorAll("button").forEach(b=>b.onclick=()=>pickFound(findResults[+b.dataset.i]));
+  }catch(err){if(seq!==findSeq)return;console.warn(err);st.textContent="Couldn't reach the address search. Check your connection, or pick the spot on the map instead.";box.innerHTML="";}
+}
+function pickFound(r){
+  const lat=+r.LATITUDE,lng=+r.LONGITUDE;if(!isFinite(lat)||!isFinite(lng))return;
+  const bld=r.BUILDING&&r.BUILDING!=="NIL"?titleCase(r.BUILDING):"";
+  const street=titleCase([r.BLK_NO&&r.BLK_NO!=="NIL"?r.BLK_NO:"",r.ROAD_NAME&&r.ROAD_NAME!=="NIL"?r.ROAD_NAME:""].join(" ").trim());
+  const postal=r.POSTAL&&r.POSTAL!=="NIL"?r.POSTAL:"";
+  if(!$("fName").value.trim()&&bld)$("fName").value=bld;
+  $("fAddr").value=[bld,street,postal?"Singapore "+postal:"Singapore"].filter(Boolean).join(", ");
+  $("fArea").value=guessArea(lat,lng);
+  S.pickedLoc={lat:+lat.toFixed(6),lng:+lng.toFixed(6)};showLoc();
+  $("fFindRes").innerHTML="";const st=$("fFindStatus");st.classList.add("ok");st.textContent="✓ Pinned: "+(bld||street)+(postal?" ("+postal+")":"");$("fErr").textContent="";
+}
+$("fFind").addEventListener("input",()=>{clearTimeout(findTimer);const q=$("fFind").value.trim();findTimer=setTimeout(runFind,/^\d{6}$/.test(q)?50:450);});
+$("fFind").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();clearTimeout(findTimer);
+  if(findResults.length&&$("fFindRes").children.length===1)pickFound(findResults[0]);else runFind();}});
+$("fFindBtn").onclick=()=>{clearTimeout(findTimer);runFind();};
 $("fCoords").addEventListener("change",e=>{
   const m=String(e.target.value).match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);
   if(!m){$("fErr").textContent="Paste coordinates like 1.3893, 103.9875 (right-click the place in Google Maps to copy them).";return;}
@@ -1065,12 +1126,13 @@ function openForm(l){
   if(!S.authUser){signIn();return;}
   if(!S.isEditor){toast("Only Applied Foodies editors can log lunches. Send your editor ID to the page owner.");openAcct();return;}
   S.editing=l||null;S.photoFile=null;$("fErr").textContent="";$("lunchDlgTitle").textContent=l?"Edit lunch":"Log a lunch";
+  $("fFind").value="";$("fFindRes").innerHTML="";$("fFindStatus").textContent="";$("fFindStatus").classList.remove("ok");findResults=[];
   $("fPreset").value="";$("fName").value=l?.name||"";$("fArea").value=l?.area||"Tampines";$("fAddr").value=l?.addr||"";$("fFood").value=l?.food||"";
   $("fDate").value=l?.date||new Date().toISOString().slice(0,10);$("fGuest").value=l?.guest||"";$("fRole").value=l?.role||"";$("fNotes").value=l?.notes||"";$("fCoords").value="";
   S.pickedLoc=l&&l.lat!=null?{lat:l.lat,lng:l.lng}:null;showLoc();
   $("fPhoto").value="";const pv=$("fPreview");if(l&&l.thumb){pv.src=photoURL(l);pv.style.display="block";}else pv.style.display="none";
   $("fPhoto").disabled=false;$("photoHint").textContent=true?(l&&l.photoId?"Choose a file to replace the current photo.":"JPG or PNG; big photos are resized automatically."):"Only editors of this page can upload photos.";
-  dlg.showModal();$("fName").focus();
+  dlg.showModal();(l?$("fName"):$("fFind")).focus();
 }
 async function makePhotos(file){
   const bmp=await createImageBitmap(file,{imageOrientation:"from-image"});
@@ -1091,7 +1153,7 @@ function friendly(err){const c=err&&err.code;
 $("lunchForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const name=$("fName").value.trim();if(!name){$("fErr").textContent="Add the name of the food place.";$("fName").focus();return;}
-  if(!S.pickedLoc){$("fErr").textContent="Set a pin: choose a quick-fill spot, pick on the map, or paste coordinates.";return;}
+  if(!S.pickedLoc){$("fErr").textContent="Set the location: search a postal code above, choose a popular spot, or pick it on the map.";return;}
   const btn=$("fSave");btn.disabled=true;btn.textContent="Saving…";$("fErr").textContent="";
   try{
     const prev=S.editing;let photoId=prev?.photoId||null,thumb=prev?.thumb||null;
