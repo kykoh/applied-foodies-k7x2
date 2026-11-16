@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isEditor() {
+      return signedIn() && exists(/databases/$(database)/documents/editors/$(request.auth.uid));
+    }
+
+    // Anyone with the link can read lunches, photos and scores.
+    match /lunches/{id} { allow read: if true; allow write: if isEditor(); }
+    match /photos/{id}  { allow read: if true; allow write: if isEditor(); }
+
+    // Any signed-in Google user can add a score; they can remove their own, editors can remove any.
+    match /ratings/{id} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.taste is int && request.resource.data.taste >= 1 && request.resource.data.taste <= 10
+        && request.resource.data.value is int && request.resource.data.value >= 1 && request.resource.data.value <= 10
+        && request.resource.data.vibe  is int && request.resource.data.vibe  >= 1 && request.resource.data.vibe  <= 10;
+      allow delete: if isEditor() || (signedIn() && resource.data.createdBy == request.auth.uid);
+    }
+
+    // Editors are added by hand in the Firebase console: a document whose ID is the person's editor ID.
+    match /editors/{uid} { allow read: if signedIn() && request.auth.uid == uid; }
+  }
+}
