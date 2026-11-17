@@ -6,7 +6,7 @@ Come for the food, stay for the stories. A live map, food trail and photo wall f
 - **Our journey**: lunches logged, friends made, neighbourhoods explored, average score, leaderboard and friends list.
 - **Food trail**: every lunch in order, plus the photo wall.
 
-It's a static site (GitHub Pages) with Firebase (Firestore + Google sign-in) as the shared live database. Anyone with the link can view; signed-in guests can add scores out of 10; only editors can log, edit or delete lunches.
+It's a static site (GitHub Pages) with Firebase (Firestore + Google sign-in) as the shared live database. Anyone with the link can view. Anyone who signs in with Google can log lunches, edit or delete their own, and add scores out of 10. Owners have full control: they can delete any lunch, photo or score from the **Manage** panel and make other people owners.
 
 ## One-time setup
 
@@ -17,9 +17,9 @@ It's a static site (GitHub Pages) with Firebase (Firestore + Google sign-in) as 
    Under Authentication > Settings > **Authorized domains**, add `<your-github-username>.github.io`.
 4. **Web app config**: Project settings > Your apps > add a **Web** app, copy the `firebaseConfig` object
    into `firebase-config.js` (replace `null`), and commit.
-5. **Make yourself an editor**: open the site, click **Sign in**, then click your name to see your **editor ID**.
+5. **Make yourself an owner**: open the site, click **Sign in**, then click your name to see your **editor ID**.
    In Firestore, create a collection `editors` and add a document whose **Document ID** is that editor ID
-   (add any field, e.g. `name: "Kian Yew"`). Repeat for your friend. Reload the page; your name shows "· Editor".
+   (add any field, e.g. `name: "Kian Yew"`). Reload the page; your name shows "· Owner" and a **Manage** button appears. From then on, add other owners from **Manage → People** (they need to sign in once first).
 6. **GitHub Pages**: repo Settings > Pages > Source: *Deploy from a branch*, Branch: `main`, folder `/ (root)`.
 
 ## Notes

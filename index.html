@@ -139,6 +139,27 @@ img{max-width:100%}
 .pop .pinfo .badge{margin-left:auto;min-width:44px;padding:5px 6px}
 .pop .pinfo .badge b{font-size:16px;color:inherit}
 .pop .pclose{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.92);cursor:pointer;font-size:18px;line-height:1;display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+#adminDlg{width:min(860px,calc(100vw - 24px));height:min(760px,calc(100vh - 24px))}
+#adminDlg .adm{display:flex;flex-direction:column;height:100%;padding:18px 18px 12px;gap:10px}
+.admhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.admhead h2{font-size:24px}
+.admtabs{display:flex;gap:6px;border-bottom:1.5px solid var(--line)}
+.admtabs button{border:0;background:none;padding:9px 14px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1.5px}
+.admtabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--coral)}
+.admbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;font-weight:600}
+.admbar input[type=search]{flex:1;min-width:160px;padding:8px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.admlist{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+.arow{display:grid;grid-template-columns:24px 48px minmax(0,1fr) auto;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:7px 9px;background:#fff}
+.arow.noimg{grid-template-columns:24px minmax(0,1fr) auto}
+.arow input[type=checkbox]{width:18px;height:18px;accent-color:var(--coral)}
+.arow .thumb{width:48px;height:48px;border-radius:9px}
+.arow b{display:block;font-size:14.5px;overflow-wrap:anywhere}
+.arow small{color:var(--muted);font-size:12.5px;display:block;overflow-wrap:anywhere}
+.arow .acts{display:flex;gap:6px;align-items:center}
+.role{font-size:11.5px;font-weight:800;border-radius:99px;padding:3px 9px;background:#ececee;color:#3d3d40}
+.role.own{background:var(--coral);color:#fff}
+.btn.del{color:#c4373c;border-color:#f0c9cb}
+.btn.del:hover{background:#fff3f3}
 #lightbox{width:min(1100px,calc(100vw - 24px));max-height:calc(100vh - 24px);background:#0f1418;color:#fff;padding:0;border-radius:18px}
 #lightbox::backdrop{background:rgba(5,10,15,.82)}
 #lightbox .lbimg{display:grid;place-items:center;background:#000;max-height:calc(100vh - 120px)}
@@ -404,6 +425,7 @@ label.f textarea{min-height:84px;resize:vertical}
       <a href="#trail" id="navTrail">Food trail</a>
     </nav>
     <span class="live" id="live"><i></i><span id="liveText">Connecting…</span></span>
+    <button class="btn" id="manageBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Manage</button>
     <button class="btn" id="authBtn" type="button">Sign in</button>
     <button class="btn primary" id="addBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Log a lunch</button>
   </div>
@@ -562,13 +584,26 @@ label.f textarea{min-height:84px;resize:vertical}
         <button class="btn primary small" type="button" id="avSave">Save my character</button>
       </div>
     </div>
-    <label class="f" for="acctUid">Your editor ID <span class="hint">To become an editor, send this ID to the page owner.</span><input id="acctUid" readonly></label>
+    <label class="f" for="acctUid">Your user ID <span class="hint">Owners can see you in their Manage panel once you've signed in.</span><input id="acctUid" readonly></label>
     <div class="formfoot" style="justify-content:flex-end">
       <button class="btn" type="button" id="acctCopy">Copy ID</button>
       <button class="btn" type="button" id="acctOut">Sign out</button>
       <button class="btn primary" value="close">Done</button>
     </div>
   </form>
+</dialog>
+<dialog id="adminDlg" aria-labelledby="adminTitle">
+  <div class="adm">
+    <div class="admhead"><div><h2 id="adminTitle">Owner controls</h2><p class="fine">Clear wrong entries and manage who has full control. Deleting can't be undone.</p></div>
+      <button class="btn small" type="button" id="admClose">Close</button></div>
+    <div class="admtabs" role="tablist">
+      <button type="button" role="tab" data-tab="lunches" aria-selected="true">Lunches</button>
+      <button type="button" role="tab" data-tab="scores" aria-selected="false">Scores</button>
+      <button type="button" role="tab" data-tab="people" aria-selected="false">People</button>
+    </div>
+    <div class="admbar" id="admBar"></div>
+    <div class="admlist" id="admList"></div>
+  </div>
 </dialog>
 <dialog id="lightbox" aria-labelledby="lbTitle">
   <div class="lbimg"><img id="lbImg" alt=""></div>
@@ -620,7 +655,7 @@ const ICON_FORK='<svg viewBox="0 0 24 24" fill="none" stroke="#0078b4" stroke-wi
 
 /* ================= state ================= */
 const S={lunches:[],ratings:[],selected:null,area:"all",q:"",sort:"new",mode:"transit",origin:"soc",page:"map",
-  avatars:{},picking:false,db:null,user:null,assets:null,canWrite:null,myId:null,live:"connecting",editing:null,pickedLoc:null,photoFile:null};
+  avatars:{},users:{},owners:{},picking:false,db:null,user:null,assets:null,canWrite:null,myId:null,live:"connecting",editing:null,pickedLoc:null,photoFile:null};
 
 /* ================= geo helpers ================= */
 const LON0=103.82,LAT0=1.35;
@@ -944,7 +979,7 @@ function avatarScene(a,mode,anim){
 }
 function avatarFor(l){
   const uid=l&&l.createdBy;let a=uid&&S.avatars[uid];
-  if(!a&&S.isEditor&&S.myId)a=S.avatars[S.myId];
+  if(!a&&!uid&&S.myId)a=S.avatars[S.myId];
   return normAv(a,uid||S.myId||"applied");
 }
 function miniHead(a){return `<span class="mini"><svg viewBox="0 0 32 32">${avHead(16,14,10,a)}<rect x="6" y="26" width="20" height="10" rx="5" fill="${AV.shirt[a.shirt]}"/></svg></span>`;}
@@ -1090,7 +1125,7 @@ function renderPanel(){
   else if(S.live==="unavailable")html+=`<div class="banner">Couldn't reach the shared lunch log. Check your connection and reload the page.</div>`;
   else if(S.live==="slow")html+=`<div class="banner">Still connecting to the shared log. What you see may be out of date.</div>`;
   const list=sorted(visible());
-  if(!S.lunches.length)html+=`<div class="empty"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 60s20-19 20-34a20 20 0 0 0-40 0c0 15 20 34 20 34z" fill="#0078b4"/><circle cx="32" cy="26" r="11" fill="#fff"/><path d="M28 20v6a2 2 0 0 0 2 2v6M28 20v3M31 20v3M32.5 20v6a2 2 0 0 1-2 2" stroke="#0078b4" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M37 34V20c-1.7.7-2.6 2.8-2.6 5.4 0 1.5.9 2.1 2.6 2.1" stroke="#ffb81c" stroke-width="2" fill="none" stroke-linecap="round"/></svg><h3>The map is hungry!</h3><p style="margin:0">No lunches pinned yet. Log your first Applied Foodies lunch with the spot, your new friend, a photo and what you learned.</p>${S.isEditor?`<button class="btn primary" type="button" id="emptyAdd">Log the first lunch</button>`:""}</div>`;
+  if(!S.lunches.length)html+=`<div class="empty"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 60s20-19 20-34a20 20 0 0 0-40 0c0 15 20 34 20 34z" fill="#0078b4"/><circle cx="32" cy="26" r="11" fill="#fff"/><path d="M28 20v6a2 2 0 0 0 2 2v6M28 20v3M31 20v3M32.5 20v6a2 2 0 0 1-2 2" stroke="#0078b4" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M37 34V20c-1.7.7-2.6 2.8-2.6 5.4 0 1.5.9 2.1 2.6 2.1" stroke="#ffb81c" stroke-width="2" fill="none" stroke-linecap="round"/></svg><h3>The map is hungry!</h3><p style="margin:0">No lunches pinned yet. Log your first Applied Foodies lunch with the spot, your new friend, a photo and what you learned.</p>${true?`<button class="btn primary" type="button" id="emptyAdd">Log the first lunch</button>`:""}</div>`;
   else if(!list.length)html+=`<div class="empty"><p style="margin:0">Nothing matches that search or area.</p></div>`;
   else html+=`<div class="list">${list.map(itemHTML).join("")}</div>`;
   body.innerHTML=html;
@@ -1100,13 +1135,13 @@ function renderPanel(){
 $("sortSel").onchange=e=>{S.sort=e.target.value;renderPanel();};
 function detailHTML(l){
   const a=agg(l.id);const rs=ratingsFor(l.id).sort((p,q)=>(q.createdAt||0)-(p.createdAt||0));const url=photoURL(l);const hasLoc=l.lat!=null;
-  const est=hasLoc?Object.fromEntries(MODE_ORDER.map(m=>[m,estimate(l,m)])):null;const canW=!!S.isEditor;const canRate=!!S.authUser;const road=hasLoc&&roadRoute(l).road;
+  const est=hasLoc?Object.fromEntries(MODE_ORDER.map(m=>[m,estimate(l,m)])):null;const canW=!!S.isEditor||(!!S.myId&&l.createdBy===S.myId);const canRate=!!S.authUser;const road=hasLoc&&roadRoute(l).road;
   const barCol=v=>v>=8?"#16c172":v>=6?"#ffb81c":"#e5484d";
   return `
   <button class="btn small ghost" type="button" id="back" style="align-self:flex-start">← All lunches</button>
   <div class="dhero" ${url?`role="button" tabindex="0" data-zoom="1" style="cursor:zoom-in" aria-label="Expand photo"`:""}>${url?`<img src="${url}" data-full="${esc(l.photoId||"")}" alt="Photo from lunch at ${esc(l.name)}">`:`<span class="nophoto">${ICON_FORK.replace('stroke="#0078b4"','stroke="#fff"').replace('<svg','<svg style="width:44px;height:44px"')}No photo yet</span>`}
     <span class="cap">${l.guest?`Lunch with ${esc(l.guest)}`:""}${l.guest&&l.date?" · ":""}${l.date?esc(fmtDate(l.date)):""}</span></div>
-  <div class="dtitle"><h2>${esc(l.name)}</h2><p>${esc(l.addr||"")}</p></div>
+  <div class="dtitle"><h2>${esc(l.name)}</h2><p>${esc(l.addr||"")}</p>${l.createdByName?`<p class="fine" style="margin-top:4px">Logged by ${esc(l.createdByName)}</p>`:""}</div>
   <div class="tags">${l.area?`<span class="tag t1">${esc(l.area)}</span>`:""}${l.food?`<span class="tag t2">${esc(l.food)}</span>`:""}${l.role?`<span class="tag t3">${esc(l.role)}</span>`:""}${hasLoc?`<span class="tag t4">${est.driving.km.toFixed(1)} km from SOC</span>`:""}</div>
 
   <div class="sec"><h3>Getting there</h3>
@@ -1311,7 +1346,6 @@ $("addBtn").onclick=()=>openForm(null);
 function openForm(l){
   if(!S.db){toast(S.setupNeeded?"Connect Firebase first (see the README).":"Still connecting, try again in a moment.");return;}
   if(!S.authUser){signIn();return;}
-  if(!S.isEditor){toast("Only Applied Foodies editors can log lunches. Send your editor ID to the page owner.");openAcct();return;}
   S.editing=l||null;S.photoFile=null;$("fErr").textContent="";$("lunchDlgTitle").textContent=l?"Edit lunch":"Log a lunch";
   $("fFind").value="";$("fFindRes").innerHTML="";$("fFindStatus").textContent="";$("fFindStatus").classList.remove("ok");findResults=[];
   $("fPreset").value="";$("fName").value=l?.name||"";$("fArea").value=l?.area||"Tampines";$("fAddr").value=l?.addr||"";$("fFood").value=l?.food||"";
@@ -1332,7 +1366,7 @@ async function shrink(file){try{const bmp=await createImageBitmap(file,{imageOri
   return await new Promise(r=>c.toBlob(b=>r(b||file),"image/jpeg",0.86));}catch(_){return file;}}
 function friendly(err){const c=err&&err.code;
   if(c==="quota_exceeded"||c==="quota_or_state")return "Storage is full; remove old items first.";
-  if(c==="invalid_argument"||c==="permission-denied")return "You don't have permission to do that. Ask the page owner to make you an editor.";
+  if(c==="invalid_argument"||c==="permission-denied")return "You don't have permission to do that. Only owners can change other people's entries.";
   if(c==="too_large")return "That photo is over 20 MB.";
   if(c==="unsupported_type")return "That photo format isn't supported here; use a JPG or PNG.";
   if(c==="rate_limited"||c==="resource_exhausted")return "Too many changes at once; wait a few seconds.";
@@ -1347,7 +1381,7 @@ $("lunchForm").addEventListener("submit",async e=>{
     if(S.photoFile){let ph;try{ph=await makePhotos(S.photoFile);}catch(_){throw {code:"unsupported_type"};}
       const ref=await S.db.collection("photos").add({data:ph.full,createdAt:Date.now(),createdBy:S.myId});photoId=ref.id;thumb=ph.thumb;fullCache.set(photoId,ph.full);}
     const data={name,area:$("fArea").value,addr:$("fAddr").value.trim(),food:$("fFood").value.trim(),date:$("fDate").value,guest:$("fGuest").value.trim(),role:$("fRole").value.trim(),notes:$("fNotes").value.trim(),
-      lat:+S.pickedLoc.lat,lng:+S.pickedLoc.lng,photoId:photoId||null,thumb:thumb||null,createdAt:prev?.createdAt||Date.now(),createdBy:prev?.createdBy||S.myId||null,updatedAt:Date.now()};
+      lat:+S.pickedLoc.lat,lng:+S.pickedLoc.lng,photoId:photoId||null,thumb:thumb||null,createdAt:prev?.createdAt||Date.now(),createdBy:prev?prev.createdBy||null:S.myId,createdByName:prev?prev.createdByName||"":firstName(),updatedAt:Date.now()};
     let id;if(prev){id=prev.id;await S.db.doc("lunches/"+id).set(data);}else{const ref=await S.db.collection("lunches").add(data);id=ref.id;}
     if(prev&&prev.photoId&&photoId!==prev.photoId){try{await S.db.doc("photos/"+prev.photoId).delete();}catch(_){}}
     dlg.close();toast(prev?"Lunch updated":"Lunch pinned to the map!");
@@ -1367,13 +1401,85 @@ async function saveRating(lunchId){
   catch(err){$("rErr").textContent="Couldn't save the score. "+friendly(err);btn.disabled=false;}
 }
 function confirmBox(title,text){return new Promise(res=>{const d=$("confirmDlg");$("confirmTitle").textContent=title;$("confirmText").textContent=text;d.returnValue="";d.showModal();d.addEventListener("close",()=>res(d.returnValue==="yes"),{once:true});});}
+async function removeLunch(l){ // lunch + its photo + its scores (scores by others need an owner)
+  await S.db.doc("lunches/"+l.id).delete();
+  if(l.photoId){try{await S.db.doc("photos/"+l.photoId).delete();}catch(_){}}
+  for(const r of ratingsFor(l.id)){try{await S.db.doc("ratings/"+r.id).delete();}catch(_){}}
+}
 async function deleteLunch(l){
   if(!(await confirmBox(`Delete ${l.name}?`,"This removes the pin, its photo and all its scores for everyone. It can't be undone.")))return;
-  try{for(const r of ratingsFor(l.id))await S.db.doc("ratings/"+r.id).delete();await S.db.doc("lunches/"+l.id).delete();
-    if(l.photoId){try{await S.db.doc("photos/"+l.photoId).delete();}catch(_){}}
-    S.selected=null;renderAll();toast("Lunch deleted");}catch(err){toast("Couldn't delete. "+friendly(err));}
+  try{await removeLunch(l);S.selected=null;S.popOpen=false;renderAll();toast("Lunch deleted");}catch(err){toast("Couldn't delete. "+friendly(err));}
 }
 
+
+/* ================= owner controls ================= */
+let admTab="lunches",admQ="",admSel=new Set();
+function firstName(){const u=S.authUser;return u?((u.displayName||"").trim().split(/\s+/)[0]||"Someone"):"";}
+function personName(uid){const p=S.users[uid];return (p&&p.name)||"Unknown user";}
+function openAdmin(){if(!S.isEditor)return;admSel.clear();admQ="";renderAdmin();$("adminDlg").showModal();}
+$("manageBtn").onclick=openAdmin;
+$("admClose").onclick=()=>$("adminDlg").close();
+document.querySelectorAll(".admtabs button").forEach(b=>b.onclick=()=>{admTab=b.dataset.tab;admSel.clear();admQ="";
+  document.querySelectorAll(".admtabs button").forEach(x=>x.setAttribute("aria-selected",x===b));renderAdmin();});
+function renderAdmin(){
+  if(!$("adminDlg").open&&!$("adminDlg").dataset.init){$("adminDlg").dataset.init="1";}
+  const q=admQ.toLowerCase();let rows=[],bar="";
+  if(admTab==="lunches"){
+    const list=S.lunches.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).filter(l=>!q||[l.name,l.guest,l.area,l.createdByName].join(" ").toLowerCase().includes(q));
+    bar=`<label><input type="checkbox" id="admAll"> Select all</label><input type="search" id="admQ" placeholder="Search lunches" value="${esc(admQ)}" aria-label="Search lunches"><button class="btn small del" type="button" id="admDelSel" ${admSel.size?"":"disabled"}>Delete selected (${admSel.size})</button>`;
+    rows=list.map(l=>{const n=ratingsFor(l.id).length;return `<div class="arow"><input type="checkbox" data-id="${esc(l.id)}" ${admSel.has(l.id)?"checked":""} aria-label="Select ${esc(l.name)}">
+      <span class="thumb">${l.thumb?`<img src="${l.thumb}" alt="">`:ICON_FORK.replace('stroke="#0078b4"','stroke="#fff"')}</span>
+      <span><b>${esc(l.name)}</b><small>${esc([l.date?fmtDate(l.date):"No date",l.guest?"with "+l.guest:"",n+" score"+(n===1?"":"s")].filter(Boolean).join(" · "))}</small><small>Logged by ${esc(l.createdByName||personName(l.createdBy))}</small></span>
+      <span class="acts"><button class="btn small del" type="button" data-del="${esc(l.id)}">Delete</button></span></div>`;});
+    if(!rows.length)rows=[`<div class="empty"><p style="margin:0">${S.lunches.length?"No lunches match that search.":"No lunches logged yet."}</p></div>`];
+  } else if(admTab==="scores"){
+    const ln=id=>{const l=S.lunches.find(x=>x.id===id);return l?l.name:"Deleted lunch";};
+    const list=S.ratings.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).filter(r=>!q||[r.by,r.comment,ln(r.lunchId)].join(" ").toLowerCase().includes(q));
+    bar=`<label><input type="checkbox" id="admAll"> Select all</label><input type="search" id="admQ" placeholder="Search scores" value="${esc(admQ)}" aria-label="Search scores"><button class="btn small del" type="button" id="admDelSel" ${admSel.size?"":"disabled"}>Delete selected (${admSel.size})</button>`;
+    rows=list.map(r=>{const o=(rv(r,"taste")+rv(r,"value")+rv(r,"vibe"))/3;const orphan=!S.lunches.find(x=>x.id===r.lunchId);
+      return `<div class="arow noimg"><input type="checkbox" data-id="${esc(r.id)}" ${admSel.has(r.id)?"checked":""} aria-label="Select score by ${esc(r.by||"someone")}">
+      <span><b>${esc(r.by||"Someone")} → ${esc(ln(r.lunchId))}${orphan?' <span class="role">orphaned</span>':""}</b><small>Taste ${rv(r,"taste")} · Value ${rv(r,"value")} · Vibe ${rv(r,"vibe")}${r.createdAt?" · "+new Date(r.createdAt).toLocaleDateString():""}</small>${r.comment?`<small>"${esc(r.comment)}"</small>`:""}</span>
+      <span class="acts">${badge(o,"/ 10")}<button class="btn small del" type="button" data-del="${esc(r.id)}">Delete</button></span></div>`;});
+    if(!rows.length)rows=[`<div class="empty"><p style="margin:0">${S.ratings.length?"No scores match that search.":"No scores yet."}</p></div>`];
+  } else {
+    const ids=new Set([...Object.keys(S.users),...Object.keys(S.owners)]);
+    const list=[...ids].map(id=>({id,name:personName(id),owner:!!S.owners[id],last:(S.users[id]&&S.users[id].lastSeen)||0}))
+      .sort((a,b)=>(b.owner-a.owner)||a.name.localeCompare(b.name)).filter(p=>!q||p.name.toLowerCase().includes(q));
+    bar=`<input type="search" id="admQ" placeholder="Search people" value="${esc(admQ)}" aria-label="Search people"><span class="fine">People appear here after they sign in once.</span>`;
+    rows=list.map(p=>{const me=p.id===S.myId;const lunches=S.lunches.filter(l=>l.createdBy===p.id).length;
+      return `<div class="arow noimg"><span>${miniHead(normAv(S.avatars[p.id],p.id))}</span>
+      <span><b>${esc(p.name)}${me?" (you)":""} <span class="role ${p.owner?"own":""}">${p.owner?"Owner":"Member"}</span></b><small>${lunches} lunch${lunches===1?"":"es"} logged${p.last?" · last seen "+new Date(p.last).toLocaleDateString():""}</small></span>
+      <span class="acts">${me?"":p.owner?`<button class="btn small" type="button" data-demote="${esc(p.id)}">Remove owner</button>`:`<button class="btn small primary" type="button" data-promote="${esc(p.id)}">Make owner</button>`}</span></div>`;});
+    if(!rows.length)rows=[`<div class="empty"><p style="margin:0">Nobody has signed in yet.</p></div>`];
+  }
+  $("admBar").innerHTML=bar;$("admList").innerHTML=rows.join("");
+  const qi=$("admQ");if(qi){qi.oninput=()=>{admQ=qi.value;const pos=qi.selectionStart;renderAdmin();const n=$("admQ");n.focus();try{n.setSelectionRange(pos,pos);}catch(_){}};}
+  const all=$("admAll");if(all){const boxes=[...$("admList").querySelectorAll("input[type=checkbox][data-id]")];all.checked=boxes.length>0&&boxes.every(b=>b.checked);
+    all.onchange=()=>{boxes.forEach(b=>{b.checked=all.checked;all.checked?admSel.add(b.dataset.id):admSel.delete(b.dataset.id);});renderAdmin();};}
+  $("admList").querySelectorAll("input[type=checkbox][data-id]").forEach(b=>b.onchange=()=>{b.checked?admSel.add(b.dataset.id):admSel.delete(b.dataset.id);renderAdmin();});
+  $("admList").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>adminDelete([b.dataset.del]));
+  const ds=$("admDelSel");if(ds)ds.onclick=()=>adminDelete([...admSel]);
+  $("admList").querySelectorAll("[data-promote]").forEach(b=>b.onclick=()=>setOwner(b.dataset.promote,true));
+  $("admList").querySelectorAll("[data-demote]").forEach(b=>b.onclick=()=>setOwner(b.dataset.demote,false));
+}
+async function adminDelete(ids){
+  if(!ids.length)return;const isL=admTab==="lunches";const what=isL?(ids.length===1?"this lunch":ids.length+" lunches"):(ids.length===1?"this score":ids.length+" scores");
+  if(!(await confirmBox(`Delete ${what}?`,isL?"Their pins, photos and scores will be removed for everyone. This can't be undone.":"They'll be removed for everyone. This can't be undone.")))return;
+  let ok=0,fail=0;
+  for(const id of ids){try{
+    if(isL){const l=S.lunches.find(x=>x.id===id);if(l)await removeLunch(l);}else await S.db.doc("ratings/"+id).delete();
+    ok++;admSel.delete(id);}catch(e){fail++;console.warn(e);}}
+  if(S.selected&&!S.lunches.find(x=>x.id===S.selected)){S.selected=null;S.popOpen=false;}
+  toast(fail?`Deleted ${ok}, ${fail} failed. Check the Firestore rules are up to date.`:`Deleted ${ok} ${isL?"lunch"+(ok===1?"":"es"):"score"+(ok===1?"":"s")}`);
+  if($("adminDlg").open)renderAdmin();
+}
+async function setOwner(uid,make){
+  const name=personName(uid);
+  if(!(await confirmBox(make?`Make ${name} an owner?`:`Remove ${name} as owner?`,make?"Owners have full control: they can delete any lunch, photo or score and manage other owners.":"They'll still be able to log lunches and edit their own entries.")))return;
+  try{if(make)await S.db.doc("editors/"+uid).set({name,addedBy:S.myId,addedAt:Date.now()});else await S.db.doc("editors/"+uid).delete();
+    if(make)S.owners[uid]={name};else delete S.owners[uid];toast(make?`${name} is now an owner`:`${name} is no longer an owner`);renderAdmin();}
+  catch(err){toast("Couldn't change owners. Check the Firestore rules are up to date.");}
+}
 /* ================= live data ================= */
 function setLive(st){S.live=st;$("live").classList.toggle("on",st==="live");$("liveText").textContent={live:"Live",connecting:"Connecting…",slow:"Reconnecting…",unavailable:"Offline view"}[st]||st;}
 let FB=null;
@@ -1395,19 +1501,20 @@ $("avBuilder").addEventListener("click",e=>{const b=e.target.closest("button[dat
   if(k==="glasses")avDraft.glasses=!avDraft.glasses;else if(k==="hair")avDraft.hair=b.dataset.v;else avDraft[k]=+b.dataset.v;renderBuilder();});
 $("avSave").onclick=async()=>{if(!S.db||!S.myId)return;const btn=$("avSave");btn.disabled=true;
   try{await S.db.doc("avatars/"+S.myId).set(Object.assign({},avDraft,{updatedAt:Date.now()}));S.avatars[S.myId]=Object.assign({},avDraft);renderAuth();if(movEl)movEl.dataset.sig="";positionMarkers();toast("Character saved! Pick a lunch to watch it ride.");}
-  catch(err){toast(err&&err.code==="permission-denied"?"Couldn't save. Update your Firestore rules to include avatars (see the README).":"Couldn't save. "+friendly(err));}
+  catch(err){toast(err&&err.code==="permission-denied"?"Couldn't save. The Firestore rules need updating (see the README).":"Couldn't save. "+friendly(err));}
   finally{btn.disabled=false;}};
 function openAcct(){const u=S.authUser;if(!u)return;
-  $("avBuilder").hidden=!S.isEditor;if(S.isEditor){avDraft=normAv(S.avatars[u.uid],u.uid);renderBuilder();}
-  $("acctText").textContent=(u.displayName||u.email||"Signed in")+(S.isEditor?" · Editor: you can log, edit and delete lunches.":" · You can add scores. Only editors can log lunches.");
+  $("avBuilder").hidden=false;avDraft=normAv(S.avatars[u.uid],u.uid);renderBuilder();
+  $("acctText").textContent=(u.displayName||u.email||"Signed in")+(S.isEditor?" · Owner: full control, including clearing any lunch, photo or score.":" · You can log lunches, edit or delete your own, and add scores.");
   $("acctUid").value=u.uid;$("acctDlg").showModal();}
-$("acctCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("acctUid").value);toast("Editor ID copied");}catch(_){$("acctUid").select();toast("Press Ctrl+C to copy");}};
+$("acctCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("acctUid").value);toast("User ID copied");}catch(_){$("acctUid").select();toast("Press Ctrl+C to copy");}};
 $("acctOut").onclick=async()=>{try{await FB.au.signOut(FB.auth);}catch(_){}$("acctDlg").close();toast("Signed out");};
 $("authBtn").onclick=()=>S.authUser?openAcct():signIn();
 function renderAuth(){const b=$("authBtn");const u=S.authUser;
   if(!u){b.textContent="Sign in";return;}
   const name=esc((u.displayName||u.email||"Account").split(" ")[0]);
-  b.innerHTML=(S.isEditor?miniHead(normAv(S.avatars[u.uid],u.uid)):"")+name+(S.isEditor?" · Editor":"");}
+  b.innerHTML=miniHead(normAv(S.avatars[u.uid],u.uid))+name+(S.isEditor?" · Owner":"");
+  $("manageBtn").hidden=!S.isEditor;}
 async function start(){
   const cfg=window.FIREBASE_CONFIG;
   if(!cfg||!cfg.apiKey){S.setupNeeded=true;setLive("unavailable");renderAll();return;}
@@ -1432,7 +1539,11 @@ async function start(){
   };
   au.onAuthStateChanged(auth,async u=>{
     S.authUser=u||null;S.myId=u?u.uid:null;S.isEditor=false;
-    if(u){try{const e=await fs.getDoc(fs.doc(fdb,"editors/"+u.uid));S.isEditor=e.exists();}catch(_){}}
+    if(u){try{const e=await fs.getDoc(fs.doc(fdb,"editors/"+u.uid));S.isEditor=e.exists();}catch(_){}
+      try{await fs.setDoc(fs.doc(fdb,"users/"+u.uid),{name:(u.displayName||"Someone").trim(),lastSeen:Date.now()},{merge:true});}catch(_){}
+      if(S.isEditor&&!S._ownerSubs){S._ownerSubs=true;
+        fs.onSnapshot(fs.collection(fdb,"users"),snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.users=m;if($("adminDlg").open)renderAdmin();},e=>console.warn("users",e));
+        fs.onSnapshot(fs.collection(fdb,"editors"),snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.owners=m;if($("adminDlg").open)renderAdmin();},e=>console.warn("owners",e));}}
     renderAuth();renderPanel();renderTrail();
   });
   const got={l:false,r:false};
@@ -1442,7 +1553,7 @@ async function start(){
   S.db.collection("lunches").onSnapshot(snap=>{S.lunches=snap.docs.map(d=>Object.assign({id:d.id},d.data()));got.l=true;check();
     if(S.selected&&!S.lunches.find(x=>x.id===S.selected))S.selected=null;
     const typing=ratingInProgress();
-    renderChips();syncMarkers();updateRoute();if(!typing)renderPanel();if(S.page==="journey")renderJourney();renderTrail();},onErr);
+    renderChips();syncMarkers();updateRoute();if(!typing)renderPanel();if($("adminDlg").open)renderAdmin();if(S.page==="journey")renderJourney();renderTrail();},onErr);
   S.db.collection("avatars").onSnapshot(snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.avatars=m;renderAuth();if(movEl)movEl.dataset.sig="";positionMarkers();},err=>console.warn("avatars",err));
   S.db.collection("ratings").onSnapshot(snap=>{S.ratings=snap.docs.map(d=>Object.assign({id:d.id},d.data()));got.r=true;check();
     const typing=ratingInProgress();
