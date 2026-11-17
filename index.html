@@ -79,12 +79,12 @@ img{max-width:100%}
 
 /* main */
 .main{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:18px;align-items:start}
-.gmap{position:relative;height:min(78vh,820px);min-height:460px;border-radius:20px;overflow:hidden;background:#a7dcff;box-shadow:0 10px 30px rgba(31,36,48,.12);border:1px solid #e6dccf;touch-action:none;user-select:none}
-.gmap canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+.gmap{position:relative;height:min(78vh,820px);min-height:460px;border-radius:20px;overflow:hidden;background:#a7dcff;box-shadow:0 10px 30px rgba(31,36,48,.12);border:1px solid #e6dccf;user-select:none}
+.gmap canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 .gmap.dragging canvas{cursor:grabbing}
 .gmap.picking canvas{cursor:crosshair}
 .mk{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.searchbox{position:absolute;left:12px;top:12px;z-index:5;width:min(370px,calc(100% - 24px))}
+.searchbox{position:absolute;left:12px;top:12px;z-index:5;width:min(370px,calc(100% - 78px))}
 .searchbox .sb{display:flex;align-items:center;gap:8px;background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:0 6px 0 16px;height:46px}
 .searchbox input{flex:1;border:0;outline:0;font-family:var(--font-map);font-size:15px;background:transparent;min-width:0}
 .searchbox .sb svg{width:20px;height:20px;color:#5f6368;flex:none}
@@ -127,6 +127,14 @@ img{max-width:100%}
 .socm .sq svg{width:20px;height:20px}
 .socm .lb{font-family:var(--font-map);font-weight:700;font-size:13.5px;color:#174ea6;text-shadow:-2px 0 #fff,2px 0 #fff,0 -2px #fff,0 2px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff;line-height:1.15;text-align:left}
 .socm .lb small{display:block;font-weight:500;font-size:11.5px;color:#3c4043}
+.pop .pmore{display:block;width:100%;border:0;border-top:1px solid #e8eaed;background:#f8fbfd;padding:10px 12px;text-align:left;font:600 13px var(--font-map);color:var(--coral);cursor:pointer}
+.fsbtn{position:absolute;right:12px;top:12px;z-index:5;width:42px;height:42px;border:0;border-radius:10px;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;color:#5f6368;cursor:pointer}
+.fsbtn svg{width:20px;height:20px}
+.gesture{position:absolute;inset:0;z-index:7;display:grid;place-items:center;padding:24px;text-align:center;background:rgba(0,0,0,.45);color:#fff;font:600 16px/1.4 var(--font-body);opacity:0;pointer-events:none;transition:opacity .2s}
+.gesture.show{opacity:1}
+.gmap.full{position:fixed;inset:0;z-index:70;height:100vh;height:100dvh;min-height:0;border-radius:0;border:0}
+.gmap.full canvas{touch-action:none}
+body.noscroll{overflow:hidden}
 .pop{position:absolute;left:0;top:0;width:250px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.28);pointer-events:auto;z-index:6;overflow:hidden;font-family:var(--font-map)}
 .pop::after{content:"";position:absolute;left:var(--ax,50%);bottom:-8px;margin-left:-8px;border:8px solid transparent;border-bottom:0;border-top-color:#fff}
 .pop .pimg{display:block;width:100%;aspect-ratio:4/3;border:0;padding:0;background:linear-gradient(135deg,#d6eef8,#9ccbe2);cursor:zoom-in;position:relative}
@@ -379,14 +387,72 @@ label.f textarea{min-height:84px;resize:vertical}
   .jgrid{grid-template-columns:1fr}
 }
 @media (max-width:760px){
+  /* compact header: logo + icon buttons on one row, tabs on the next; Log a lunch floats */
+  .bar{position:relative;backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+  .bar .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;padding-top:8px;padding-bottom:8px}
+  .brand{margin-right:0}
+  .brand svg{width:36px;height:36px}
+  .brand b{font-size:20px}
+  .wm small{display:none}
+  .nav{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(3,1fr)}
+  .nav a{text-align:center;padding:8px 4px;font-size:13.5px}
+  #manageBtn,#authBtn{padding:7px 9px;border-radius:12px}
+  #manageBtn .lbl,#authBtn .lbl{display:none}
+  #authBtn .mini{margin-right:0;width:28px;height:28px}
+  #authBtn:not(:has(.mini)){padding:7px 12px}
+  #addBtn{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:45;border-radius:99px;padding:13px 18px;box-shadow:0 6px 18px rgba(0,92,138,.35)}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+  .hero{padding:16px 0 14px}
+  .hero h1{font-size:32px;margin:10px 0 8px}
+  .hero p{font-size:15px}
+  .gmap{height:62vh;height:62svh;min-height:380px;border-radius:16px}
+  .ctrl{bottom:22px;right:10px;gap:8px}
+  .ctrl .pill{height:36px;padding:0 11px;font-size:12.5px}
+  .ctrl button{width:38px;height:38px}
+  .gchips{top:64px;right:12px}
+  .searchbox .sb{height:44px}
+  .attrib{font-size:9px}
+  .pop{width:min(250px,calc(100% - 16px))}
+  .panel{border-radius:16px}
+  .pbody{padding:12px}
+  .dtitle h2{font-size:22px}
+  .modes{gap:5px}
+  .mode{padding:7px 2px;font-size:12px}
+  .tenpick{gap:3px}
+  .tenpick label{height:36px;font-size:13px}
+  .score-big .badge{min-width:64px}
+  input,select,textarea{font-size:16px!important} /* stops iPhone zooming in on focus */
+  dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:18px}
+  dialog form{padding:16px}
+  .avb{grid-template-columns:1fr}
+  .avprev{width:100%;height:130px}
+  #adminDlg{height:calc(100dvh - 16px)}
+  #adminDlg .adm{padding:14px 12px 10px}
+  .arow{grid-template-columns:22px 42px minmax(0,1fr);row-gap:6px}
+  .arow.noimg{grid-template-columns:22px minmax(0,1fr)}
+  .arow .thumb{width:42px;height:42px}
+  .arow .acts{grid-column:2/-1;justify-content:flex-end}
+  .arow.noimg .acts{grid-column:1/-1}
+  .admbar #admDelSel{width:100%}
+  #lightbox .lbcap{flex-direction:column;align-items:flex-start}
+  .trailsec{margin-top:24px}
+  .jhead{padding:20px 0 14px}
+  .trailstats{width:100%}
+  .tpill{flex:1;min-width:90px}
+  .tpill b{font-size:19px}
+  .wall{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .pola .cap{font-size:18px}
+  main.wrap{padding-bottom:90px}
   .trail::before{left:29px}
   .tflag,.tmonth{align-self:flex-start;margin-left:0}
   .tstop{grid-template-columns:58px minmax(0,1fr);gap:12px}
   .tnum{grid-column:1}
   .tstop.sl .tcard,.tstop.sr .tcard{grid-column:2}
   .tstop.sl .tcard::after,.tstop.sr .tcard::after{left:-16px;right:auto;width:12px}
-  .tcard{grid-template-columns:86px minmax(0,1fr)}
-  .tph{width:86px;height:86px;padding:4px 4px 12px}
+  .tcard{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:8px}
+  .tph{width:76px;height:76px;padding:4px 4px 12px}
+  .tcard h3{font-size:16.5px}
+  .tcard .trow{gap:6px}
 }
 @media (max-width:640px){
   .wrap{padding:0 16px 32px}
@@ -394,7 +460,6 @@ label.f textarea{min-height:84px;resize:vertical}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stat b{font-size:40px}
   .grid2{grid-template-columns:1fr}
-  .gmap{height:68vh}
   .live{display:none}
 }
 @media (prefers-reduced-motion:reduce){
@@ -425,9 +490,9 @@ label.f textarea{min-height:84px;resize:vertical}
       <a href="#trail" id="navTrail">Food trail</a>
     </nav>
     <span class="live" id="live"><i></i><span id="liveText">Connecting…</span></span>
-    <button class="btn" id="manageBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Manage</button>
+    <button class="btn" id="manageBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span class="lbl">Manage</span></button>
     <button class="btn" id="authBtn" type="button">Sign in</button>
-    <button class="btn primary" id="addBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Log a lunch</button>
+    <button class="btn primary" id="addBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">Log a lunch</span></button>
   </div>
 </header>
 
@@ -453,6 +518,8 @@ label.f textarea{min-height:84px;resize:vertical}
         </div>
         <div class="gchips" id="gchips" role="group" aria-label="Filter by area"></div>
         <div class="pickbar" id="pickbar">Tap the map where the food place is <button type="button" id="pickCancel">Cancel</button></div>
+        <button class="fsbtn" type="button" id="btnFull" aria-label="Expand map to full screen" title="Full-screen map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
+        <div class="gesture" id="gestureHint" aria-hidden="true">Use two fingers to move the map, or tap <b>⤢</b> for full screen</div>
         <div class="ctrl">
           <button class="pill" type="button" id="btnAll" title="Show all of Singapore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>All Singapore</button>
           <button class="pill" type="button" id="btnSoc" title="Back to the SOC"><svg viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>SOC</button>
@@ -836,23 +903,31 @@ const MAP=(function(){
   }
 
   /* ---- interaction ---- */
-  const ptrs=new Map();let drag=null,pinch=null,onTap=null;
+  const ptrs=new Map();let drag=null,pinch=null,onTap=null,hintT=null;
+  // On phones, one finger scrolls the page (like an embedded Google Map); two fingers pan and zoom.
+  // In full-screen mode one finger pans the map.
+  const coop=e=>e.pointerType==="touch"&&!host.classList.contains("full")&&!host.classList.contains("picking");
+  function hint(){const h=$("gestureHint");h.classList.add("show");clearTimeout(hintT);hintT=setTimeout(()=>h.classList.remove("show"),1600);}
   cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(ptrs.size===1){drag={x:e.clientX,y:e.clientY,u:view.u,v:view.v,moved:false};}
-    else if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),z:view.z};drag=null;}
+    const r=cv.getBoundingClientRect();
+    if(ptrs.size===1){drag={x:e.clientX,y:e.clientY,ly:e.clientY,u:view.u,v:view.v,moved:false,coop:coop(e)};}
+    else if(ptrs.size===2){const [a,b]=[...ptrs.values()];const mx=(a.x+b.x)/2-r.left,my=(a.y+b.y)/2-r.top;const [wu,wv]=toWorld(mx,my);
+      pinch={d:Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),z:view.z,wu,wv};drag=null;$("gestureHint").classList.remove("show");}
     if(anim){cancelAnimationFrame(anim.id);anim=null;}
   });
   cv.addEventListener("pointermove",e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
     const r=cv.getBoundingClientRect();
     if(pinch&&ptrs.size===2){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);const mx=(a.x+b.x)/2-r.left,my=(a.y+b.y)/2-r.top;
-      const nz=pinch.z+Math.log2(d/pinch.d);zoomAround(nz-view.z,mx,my);return;}
-    if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)<4)return;drag.moved=true;host.classList.add("dragging");
+      view.z=pinch.z+Math.log2(d/pinch.d);clamp();const s=scale();view.u=pinch.wu-(mx-W/2)/s;view.v=pinch.wv-(my-H/2)/s;clamp();req();return;}
+    if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)<6)return;
+      if(drag.coop){if(!drag.moved)hint();drag.moved=true;window.scrollBy(0,drag.ly-e.clientY);drag.ly=e.clientY;return;}
+      drag.moved=true;host.classList.add("dragging");
       const s=scale();view.u=drag.u-dx/s;view.v=drag.v-dy/s;clamp();req();}
   });
   const up=e=>{const wasDrag=drag&&!drag.moved&&ptrs.size===1;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
     if(e.type==="pointerup"&&wasDrag&&onTap){const r=cv.getBoundingClientRect();const [u,v]=toWorld(e.clientX-r.left,e.clientY-r.top);onTap(LAT(v),LON(u));}
     if(ptrs.size===0){drag=null;host.classList.remove("dragging");}
-    else if(ptrs.size===1){const p=[...ptrs.values()][0];drag={x:p.x,y:p.y,u:view.u,v:view.v,moved:true};}
+    else if(ptrs.size===1){const p=[...ptrs.values()][0];drag={x:p.x,y:p.y,ly:p.y,u:view.u,v:view.v,moved:true,coop:false};}
   };
   cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
   cv.addEventListener("wheel",e=>{e.preventDefault();const r=cv.getBoundingClientRect();let d=-e.deltaY*(e.deltaMode===1?0.05:0.0022);d=Math.max(-0.8,Math.min(0.8,d));zoomAround(d,e.clientX-r.left,e.clientY-r.top);},{passive:false});
@@ -1058,15 +1133,17 @@ function renderPop(){
     popEl.addEventListener("pointerdown",e=>e.stopPropagation());
     popEl.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;
       if(b.dataset.act==="close"){S.popOpen=false;renderPop();}
-      if(b.dataset.act==="zoom")openLightbox(S.selected);});}
+      if(b.dataset.act==="zoom")openLightbox(S.selected);
+      if(b.dataset.act==="more"){setFull(false);$("panel").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});}});}
   const a=agg(l.id);const url=photoURL(l);const sig=[l.id,l.thumb?l.thumb.length:0,a?a.overall.toFixed(1):"",l.name,l.guest].join("|");
   if(popEl.dataset.sig!==sig){popEl.dataset.sig=sig;
     popEl.innerHTML=`<button type="button" class="pimg" data-act="zoom" aria-label="Expand photo of ${esc(l.name)}">${url?`<img src="${url}" data-full="${esc(l.photoId||"")}" alt=""><span class="zoom"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Expand</span>`:`<span class="none">No photo yet</span>`}</button>
       <button type="button" class="pclose" data-act="close" aria-label="Close">×</button>
-      <div class="pinfo"><span><b>${esc(l.name)}</b><small>${esc([l.guest?"with "+l.guest:"",l.date?fmtDate(l.date):""].filter(Boolean).join(" · "))}</small></span>${badge(a?a.overall:null,a?"/ 10":"no score")}</div>`;
+      <div class="pinfo"><span><b>${esc(l.name)}</b><small>${esc([l.guest?"with "+l.guest:"",l.date?fmtDate(l.date):""].filter(Boolean).join(" · "))}</small></span>${badge(a?a.overall:null,a?"/ 10":"no score")}</div>
+      <button type="button" class="pmore" data-act="more">Directions, scores &amp; details →</button>`;
     hydrateFull(popEl);}
   popEl.style.display="";
-  const [x,y]=MAP.toScreen(U(l.lng),V(l.lat));const [W,H]=MAP.size();const w=250,h=popEl.offsetHeight||250;
+  const [x,y]=MAP.toScreen(U(l.lng),V(l.lat));const [W,H]=MAP.size();const w=popEl.offsetWidth||250,h=popEl.offsetHeight||250;
   let left=Math.max(8,Math.min(W-w-8,x-w/2));let top=y-62-h-8; if(top<8)top=Math.max(8,y+12);
   popEl.style.setProperty("--ax",Math.max(16,Math.min(w-16,x-left))+"px");
   popEl.style.transform=`translate(${left.toFixed(1)}px,${top.toFixed(1)}px)`;
@@ -1214,6 +1291,12 @@ $("q").addEventListener("input",e=>{S.q=e.target.value;renderPanel();syncMarkers
 $("q").addEventListener("focus",renderSugg);
 $("q").addEventListener("blur",()=>setTimeout(()=>$("sugg").classList.remove("show"),120));
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter"){const f=visible()[0];if(f){$("q").blur();select(f.id,true);}}});
+function setFull(on){const g=$("gmap");if(g.classList.contains("full")===on)return;g.classList.toggle("full",on);document.body.classList.toggle("noscroll",on);
+  $("btnFull").setAttribute("aria-label",on?"Exit full-screen map":"Expand map to full screen");
+  $("btnFull").innerHTML=on?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+  MAP.req();}
+$("btnFull").onclick=()=>setFull(!$("gmap").classList.contains("full"));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("gmap").classList.contains("full")&&!document.querySelector("dialog[open]"))setFull(false);});
 $("btnSoc").onclick=()=>MAP.flyTo(U(SOC.lng)-6,V(SOC.lat)+2,13.25,600);
 $("btnAll").onclick=()=>{const [w,h]=MAP.size();const s=Math.min(w/(0.47*1000),(h-40)/(0.26*1000));MAP.flyTo(U(103.83),V(1.352),Math.max(10.4,Math.log2(s*360*1000/256)),700);};
 
@@ -1337,9 +1420,9 @@ $("fCoords").addEventListener("change",e=>{
   if(a<1.15||a>1.48||b<103.6||b>104.1){$("fErr").textContent="Those coordinates aren't in Singapore. Latitude comes first (about 1.3), then longitude (about 103.9).";return;}
   $("fErr").textContent="";S.pickedLoc={lat:a,lng:b};showLoc();});
 $("fPhoto").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];S.photoFile=f||null;const pv=$("fPreview");if(f){pv.src=URL.createObjectURL(f);pv.style.display="block";}else pv.style.display="none";});
-$("fPick").onclick=()=>{S.picking=true;dlg.close();$("gmap").classList.add("picking");$("pickbar").classList.add("show");if(S.page!=="map")location.hash="map";$("gmap").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"center"});};
+$("fPick").onclick=()=>{S.picking=true;dlg.close();$("gmap").classList.add("picking");if(matchMedia("(max-width:760px)").matches){setFull(true);S._pickFull=true;}$("pickbar").classList.add("show");if(S.page!=="map")location.hash="map";$("gmap").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"center"});};
 $("pickCancel").onclick=()=>{endPick();dlg.showModal();};
-function endPick(){S.picking=false;$("gmap").classList.remove("picking");$("pickbar").classList.remove("show");}
+function endPick(){S.picking=false;$("gmap").classList.remove("picking");$("pickbar").classList.remove("show");if(S._pickFull){S._pickFull=false;setFull(false);}}
 function finishPick(loc){endPick();S.pickedLoc=loc;showLoc();dlg.showModal();toast("Pin placed");}
 $("fCancel").onclick=()=>dlg.close();
 $("addBtn").onclick=()=>openForm(null);
@@ -1513,7 +1596,7 @@ $("authBtn").onclick=()=>S.authUser?openAcct():signIn();
 function renderAuth(){const b=$("authBtn");const u=S.authUser;
   if(!u){b.textContent="Sign in";return;}
   const name=esc((u.displayName||u.email||"Account").split(" ")[0]);
-  b.innerHTML=miniHead(normAv(S.avatars[u.uid],u.uid))+name+(S.isEditor?" · Owner":"");
+  b.innerHTML=miniHead(normAv(S.avatars[u.uid],u.uid))+`<span class="lbl">${name}${S.isEditor?" · Owner":""}</span>`;b.setAttribute("aria-label","Account: "+(u.displayName||"you"));
   $("manageBtn").hidden=!S.isEditor;}
 async function start(){
   const cfg=window.FIREBASE_CONFIG;
