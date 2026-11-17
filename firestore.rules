@@ -2,47 +2,56 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    // Owners are the people listed in the "editors" collection (document ID = their user ID).
+    // Owners: listed in "editors" (document ID = their user ID).
     function isOwner() {
       return signedIn() && exists(/databases/$(database)/documents/editors/$(request.auth.uid));
     }
+    // Members: joined with the invite link, or approved by an owner.
+    function isMember() {
+      return isOwner() || (signedIn() && exists(/databases/$(database)/documents/members/$(request.auth.uid)));
+    }
     function isAuthor() { return signedIn() && resource.data.createdBy == request.auth.uid; }
 
-    // Anyone with the link can read. Anyone signed in can log a lunch;
-    // they can edit or delete their own, owners can edit or delete anything.
+    // Anyone with the link can view. Members can post; authors edit their own; owners control everything.
     match /lunches/{id} {
       allow read: if true;
-      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if isOwner() || (isAuthor() && request.resource.data.createdBy == resource.data.createdBy);
+      allow create: if isMember() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isOwner() || (isMember() && isAuthor() && request.resource.data.createdBy == resource.data.createdBy);
       allow delete: if isOwner() || isAuthor();
     }
     match /photos/{id} {
       allow read: if true;
-      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow create: if isMember() && request.resource.data.createdBy == request.auth.uid;
       allow delete: if isOwner() || isAuthor();
     }
-
-    // Scores out of 10: anyone signed in can add; remove your own, owners remove any.
     match /ratings/{id} {
       allow read: if true;
-      allow create: if signedIn()
+      allow create: if isMember()
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.taste is int && request.resource.data.taste >= 1 && request.resource.data.taste <= 10
         && request.resource.data.value is int && request.resource.data.value >= 1 && request.resource.data.value <= 10
         && request.resource.data.vibe  is int && request.resource.data.vibe  >= 1 && request.resource.data.vibe  <= 10;
       allow delete: if isOwner() || isAuthor();
     }
-
-    // Cartoon characters: everyone sees them, each person edits their own.
     match /avatars/{uid} { allow read: if true; allow write: if signedIn() && request.auth.uid == uid; }
 
-    // Names of people who have signed in (for the owners' People list).
     match /users/{uid} {
       allow read: if isOwner() || (signedIn() && request.auth.uid == uid);
       allow write: if signedIn() && request.auth.uid == uid;
     }
 
-    // Owners: each person can check their own status; owners can see and change the list.
+    // Invite code: only owners can see or change it.
+    match /config/invite { allow read, write: if isOwner(); }
+
+    // Joining: you can add yourself only with the current invite code. Owners can approve or remove anyone.
+    match /members/{uid} {
+      allow read: if isOwner() || (signedIn() && request.auth.uid == uid);
+      allow create: if isOwner() || (signedIn() && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/config/invite)
+        && request.resource.data.code == get(/databases/$(database)/documents/config/invite).data.code);
+      allow update, delete: if isOwner();
+    }
+
     match /editors/{uid} {
       allow read: if isOwner() || (signedIn() && request.auth.uid == uid);
       allow write: if isOwner();
