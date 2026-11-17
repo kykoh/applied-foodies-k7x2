@@ -921,39 +921,43 @@ const MAP=(function(){
   // In full-screen mode one finger pans the map.
   const coop=e=>false; // one finger pans the map everywhere; swipe above/below the map to scroll the page
   function hint(){const h=$("gestureHint");h.classList.add("show");clearTimeout(hintT);hintT=setTimeout(()=>h.classList.remove("show"),1600);}
-  function down(e,fromEl){try{cv.setPointerCapture(e.pointerId);}catch(_){}ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    const r=cv.getBoundingClientRect();
-    if(ptrs.size===1){drag={x:e.clientX,y:e.clientY,ly:e.clientY,u:view.u,v:view.v,moved:false,coop:coop(e),fromEl:fromEl||null};}
-    else if(ptrs.size===2){const [a,b]=[...ptrs.values()];const mx=(a.x+b.x)/2-r.left,my=(a.y+b.y)/2-r.top;const [wu,wv]=toWorld(mx,my);
-      pinch={d:Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),z:view.z,wu,wv};drag=null;$("gestureHint").classList.remove("show");}
+  // One pointer only: a finger (or mouse) drag moves the map. No pinch or double-tap zoom on touch;
+  // zooming is done with the + / - buttons (and the mouse wheel on a computer).
+  let lastType="mouse";
+  function down(e,fromEl){
+    lastType=e.pointerType||"mouse";
+    if(!e.isPrimary)return;                       // ignore second fingers entirely
+    ptrs.clear();try{cv.setPointerCapture(e.pointerId);}catch(_){}
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});pinch=null;
+    drag={id:e.pointerId,x:e.clientX,y:e.clientY,u:view.u,v:view.v,moved:false,fromEl:fromEl||null};
     if(anim){cancelAnimationFrame(anim.id);anim=null;}
   }
   cv.addEventListener("pointerdown",e=>down(e));
   // markers: a tap opens the pin, a drag that starts on a pin still moves the map
   mk.addEventListener("pointerdown",e=>{const t=e.target.closest(".pinm,.socm");if(!t||e.button>0)return;e.preventDefault();down(e,t);});
-  // iPhone Safari: keep the page from scrolling or zooming while a finger is on the map
+  // keep the page from scrolling or zooming while a finger is on the map
   cv.addEventListener("touchmove",e=>{if(e.cancelable)e.preventDefault();},{passive:false});
   cv.addEventListener("touchstart",e=>{if(e.touches.length>1&&e.cancelable)e.preventDefault();},{passive:false});
   host.addEventListener("gesturestart",e=>e.preventDefault());
-  cv.addEventListener("pointermove",e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    const r=cv.getBoundingClientRect();
-    if(pinch&&ptrs.size===2){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);const mx=(a.x+b.x)/2-r.left,my=(a.y+b.y)/2-r.top;
-      beginFast();view.z=pinch.z+Math.log2(d/pinch.d);clamp();const s=scale();view.u=pinch.wu-(mx-W/2)/s;view.v=pinch.wv-(my-H/2)/s;clamp();req();return;}
-    if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)<6)return;
-      if(drag.coop){if(!drag.moved)hint();drag.moved=true;window.scrollBy(0,drag.ly-e.clientY);drag.ly=e.clientY;return;}
-      drag.moved=true;host.classList.add("dragging");beginFast();
-      const s=scale();view.u=drag.u-dx/s;view.v=drag.v-dy/s;clamp();req();}
-  });
-  const up=e=>{if(!ptrs.has(e.pointerId))return;const wasDrag=drag&&!drag.moved&&ptrs.size===1;const fromEl=drag&&drag.fromEl;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
-    if(ptrs.size===0)endFast();
-    if(e.type==="pointerup"&&wasDrag&&fromEl&&!S.picking){fromEl.click();}
-    else if(e.type==="pointerup"&&wasDrag&&onTap){const r=cv.getBoundingClientRect();const [u,v]=toWorld(e.clientX-r.left,e.clientY-r.top);onTap(LAT(v),LON(u));}
-    if(ptrs.size===0){drag=null;host.classList.remove("dragging");}
-    else if(ptrs.size===1){const p=[...ptrs.values()][0];drag={x:p.x,y:p.y,ly:p.y,u:view.u,v:view.v,moved:true,coop:false};}
-  };
-  cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
+  function move(e){
+    if(!drag||e.pointerId!==drag.id)return;
+    const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)<6)return;
+    drag.moved=true;host.classList.add("dragging");beginFast();
+    const s=scale();view.u=drag.u-dx/s;view.v=drag.v-dy/s;clamp();req();
+  }
+  function up(e){
+    if(!drag||e.pointerId!==drag.id)return;
+    const d=drag;drag=null;ptrs.clear();host.classList.remove("dragging");endFast();
+    if(e.type!=="pointerup"||d.moved)return;
+    if(d.fromEl&&!S.picking){d.fromEl.click();return;}
+    if(onTap){const r=cv.getBoundingClientRect();const [u,v]=toWorld(e.clientX-r.left,e.clientY-r.top);onTap(LAT(v),LON(u));}
+  }
+  cv.addEventListener("pointermove",move);
+  // listen on window too, so a lost pointer capture can never leave a "stuck" finger behind
+  window.addEventListener("pointermove",e=>{if(drag&&e.target!==cv)move(e);});
+  window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up);
   cv.addEventListener("wheel",e=>{e.preventDefault();const r=cv.getBoundingClientRect();let d=-e.deltaY*(e.deltaMode===1?0.05:0.0022);d=Math.max(-0.8,Math.min(0.8,d));beginFast();zoomAround(d,e.clientX-r.left,e.clientY-r.top);endFast(180);},{passive:false});
-  cv.addEventListener("dblclick",e=>{const r=cv.getBoundingClientRect();const [wu,wv]=toWorld(e.clientX-r.left,e.clientY-r.top);flyTo(view.u+(wu-view.u)/2,view.v+(wv-view.v)/2,view.z+1,300);});
+  cv.addEventListener("dblclick",e=>{if(lastType!=="mouse")return;const r=cv.getBoundingClientRect();const [wu,wv]=toWorld(e.clientX-r.left,e.clientY-r.top);flyTo(view.u+(wu-view.u)/2,view.v+(wv-view.v)/2,view.z+1,300);});
   $("zIn").onclick=()=>flyTo(view.u,view.v,Math.min(18.5,view.z+1),250);
   $("zOut").onclick=()=>flyTo(view.u,view.v,Math.max(10.4,view.z-1),250);
   if(window.ResizeObserver)new ResizeObserver(resize).observe(host);else window.addEventListener("resize",resize);
