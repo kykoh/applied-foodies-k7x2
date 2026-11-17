@@ -405,7 +405,7 @@ label.f textarea{min-height:84px;resize:vertical}
   .hero{padding:16px 0 14px}
   .hero h1{font-size:32px;margin:10px 0 8px}
   .hero p{font-size:15px}
-  .gmap{height:62vh;height:62svh;min-height:380px;border-radius:16px}
+  .gmap{height:58vh;height:58svh;min-height:360px;border-radius:16px}
   .ctrl{bottom:22px;right:10px;gap:8px}
   .ctrl .pill{height:36px;padding:0 11px;font-size:12.5px}
   .ctrl button{width:38px;height:38px}
@@ -519,7 +519,7 @@ label.f textarea{min-height:84px;resize:vertical}
         <div class="gchips" id="gchips" role="group" aria-label="Filter by area"></div>
         <div class="pickbar" id="pickbar">Tap the map where the food place is <button type="button" id="pickCancel">Cancel</button></div>
         <button class="fsbtn" type="button" id="btnFull" aria-label="Expand map to full screen" title="Full-screen map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
-        <div class="gesture" id="gestureHint" aria-hidden="true">Use two fingers to move the map, or tap <b>⤢</b> for full screen</div>
+        <div class="gesture" id="gestureHint" aria-hidden="true"></div>
         <div class="ctrl">
           <button class="pill" type="button" id="btnAll" title="Show all of Singapore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>All Singapore</button>
           <button class="pill" type="button" id="btnSoc" title="Back to the SOC"><svg viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>SOC</button>
@@ -906,7 +906,7 @@ const MAP=(function(){
   const ptrs=new Map();let drag=null,pinch=null,onTap=null,hintT=null;
   // On phones, one finger scrolls the page (like an embedded Google Map); two fingers pan and zoom.
   // In full-screen mode one finger pans the map.
-  const coop=e=>e.pointerType==="touch"&&!host.classList.contains("full")&&!host.classList.contains("picking");
+  const coop=e=>false; // one finger pans the map everywhere; swipe above/below the map to scroll the page
   function hint(){const h=$("gestureHint");h.classList.add("show");clearTimeout(hintT);hintT=setTimeout(()=>h.classList.remove("show"),1600);}
   cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
     const r=cv.getBoundingClientRect();
