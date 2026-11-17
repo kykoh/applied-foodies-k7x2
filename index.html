@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="robots" content="noindex,nofollow">
 <title>Applied Foodies</title>
 <link rel="icon" href="data:image/svg+xml,<svg viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'> <defs><linearGradient id='lgPin' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%2300b3e6'/><stop offset='1' stop-color='%230078b4'/></linearGradient></defs> <path d='M24 46.5S41 30.6 41 18.5A17 17 0 0 0 7 18.5C7 30.6 24 46.5 24 46.5z' fill='url(%23lgPin)'/> <circle cx='24' cy='18.5' r='12.2' fill='%23fff'/> <path d='M19.2 10.6c-1.2 1.3 1.2 2.4 0 3.7M24 9.4c-1.2 1.3 1.2 2.4 0 3.7M28.8 10.6c-1.2 1.3 1.2 2.4 0 3.7' stroke='%2300b39f' stroke-width='1.5' fill='none' stroke-linecap='round'/> <path d='M30.5 6.8 23.6 16.4M33.4 8.2 26 17' stroke='%231d2333' stroke-width='1.6' stroke-linecap='round'/> <path d='M14.6 17.2h18.8a9.4 8.4 0 0 1-18.8 0z' fill='%23ffb81c'/> <path d='M17.4 19.6q1.6 1.2 3.2 0t3.2 0 3.2 0 3.2 0' stroke='%23fff' stroke-width='1.2' fill='none' stroke-linecap='round' opacity='.9'/> <rect x='21.4' y='25.4' width='5.2' height='1.6' rx='.8' fill='%23e09600'/> </svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -166,12 +166,6 @@ body.noscroll{overflow:hidden}
 .arow .acts{display:flex;gap:6px;align-items:center}
 .role{font-size:11.5px;font-weight:800;border-radius:99px;padding:3px 9px;background:#ececee;color:#3d3d40}
 .role.own{background:var(--coral);color:#fff}
-.role.mem{background:#d6f4fc;color:#005c8a}
-.invite{width:100%;display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:#eaf6fc;border:1.5px solid #b9dcee}
-.invite b{display:block;font-size:14.5px}
-.invite small{color:var(--muted);font-size:12.5px;font-weight:500}
-.invite .irow{display:flex;gap:6px;flex-wrap:wrap}
-.invite input{flex:1;min-width:180px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-size:13px}
 .btn.del{color:#c4373c;border-color:#f0c9cb}
 .btn.del:hover{background:#fff3f3}
 #lightbox{width:min(1100px,calc(100vw - 24px));max-height:calc(100vh - 24px);background:#0f1418;color:#fff;padding:0;border-radius:18px}
@@ -728,7 +722,7 @@ const ICON_FORK='<svg viewBox="0 0 24 24" fill="none" stroke="#0078b4" stroke-wi
 
 /* ================= state ================= */
 const S={lunches:[],ratings:[],selected:null,area:"all",q:"",sort:"new",mode:"transit",origin:"soc",page:"map",
-  avatars:{},users:{},owners:{},members:{},isMember:false,picking:false,db:null,user:null,assets:null,canWrite:null,myId:null,live:"connecting",editing:null,pickedLoc:null,photoFile:null};
+  avatars:{},users:{},owners:{},picking:false,db:null,user:null,assets:null,canWrite:null,myId:null,live:"connecting",editing:null,pickedLoc:null,photoFile:null};
 
 /* ================= geo helpers ================= */
 const LON0=103.82,LAT0=1.35;
@@ -1244,7 +1238,7 @@ function renderPanel(){
 $("sortSel").onchange=e=>{S.sort=e.target.value;renderPanel();};
 function detailHTML(l){
   const a=agg(l.id);const rs=ratingsFor(l.id).sort((p,q)=>(q.createdAt||0)-(p.createdAt||0));const url=photoURL(l);const hasLoc=l.lat!=null;
-  const est=hasLoc?Object.fromEntries(MODE_ORDER.map(m=>[m,estimate(l,m)])):null;const canW=!!S.isEditor||(!!S.myId&&l.createdBy===S.myId);const canRate=canPost();const road=hasLoc&&roadRoute(l).road;
+  const est=hasLoc?Object.fromEntries(MODE_ORDER.map(m=>[m,estimate(l,m)])):null;const canW=!!S.isEditor||(!!S.myId&&l.createdBy===S.myId);const canRate=!!S.authUser;const road=hasLoc&&roadRoute(l).road;
   const barCol=v=>v>=8?"#16c172":v>=6?"#ffb81c":"#e5484d";
   return `
   <button class="btn small ghost" type="button" id="back" style="align-self:flex-start">← All lunches</button>
@@ -1266,7 +1260,7 @@ function detailHTML(l){
     ${a?`<div class="score-big">${badge(a.overall)}<div><div style="font-weight:800;font-size:16px">${a.overall>=8.5?"Must go!":a.overall>=7?"Solid choice":a.overall>=5?"Decent":"Maybe skip"}</div><span class="fine">${a.n} rating${a.n>1?"s":""}</span></div></div>
       <div class="bars">${[["Taste",a.taste],["Value",a.value],["Vibe",a.vibe]].map(([n,v])=>`<div class="rbar"><span>${n}</span><span class="track"><span class="fill" style="width:${(v*10).toFixed(0)}%;background:${barCol(v)}"></span></span><b>${v.toFixed(1)}</b></div>`).join("")}</div>`
       :`<p class="fine">No scores yet. Be the first to rate it.</p>`}
-    ${!canRate?(S.authUser?`<p class="fine">Only invited members can add scores. Ask an owner for the invite link.</p>`:`<button class="btn" type="button" id="rateSignIn">Sign in with Google to add your score</button>`):""}
+    ${!canRate?`<button class="btn" type="button" id="rateSignIn">Sign in with Google to add your score</button>`:""}
     ${canRate?`<form id="rateForm" class="sec" style="border:0;padding:0" novalidate>
       <label class="f" for="rBy">Your name<input id="rBy" maxlength="60" placeholder="e.g. Kian Yew" value="${esc(rememberName())}"></label>
       ${["taste","value","vibe"].map(k=>`<div class="rrow"><span>${k[0].toUpperCase()+k.slice(1)} <span class="hint">out of 10</span></span><div class="tenpick" role="radiogroup" aria-label="${k} score out of 10">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<input type="radio" name="${k}" id="r-${k}-${n}" value="${n}"><label for="r-${k}-${n}">${n}</label>`).join("")}</div></div>`).join("")}
@@ -1461,7 +1455,6 @@ $("addBtn").onclick=()=>openForm(null);
 function openForm(l){
   if(!S.db){toast(S.setupNeeded?"Connect Firebase first (see the README).":"Still connecting, try again in a moment.");return;}
   if(!S.authUser){signIn();return;}
-  if(!canPost()){noAccessMsg();return;}
   S.editing=l||null;S.photoFile=null;$("fErr").textContent="";$("lunchDlgTitle").textContent=l?"Edit lunch":"Log a lunch";
   $("fFind").value="";$("fFindRes").innerHTML="";$("fFindStatus").textContent="";$("fFindStatus").classList.remove("ok");findResults=[];
   $("fPreset").value="";$("fName").value=l?.name||"";$("fArea").value=l?.area||"Tampines";$("fAddr").value=l?.addr||"";$("fFood").value=l?.food||"";
@@ -1558,21 +1551,14 @@ function renderAdmin(){
       <span class="acts">${badge(o,"/ 10")}<button class="btn small del" type="button" data-del="${esc(r.id)}">Delete</button></span></div>`;});
     if(!rows.length)rows=[`<div class="empty"><p style="margin:0">${S.ratings.length?"No scores match that search.":"No scores yet."}</p></div>`];
   } else {
-    const ids=new Set([...Object.keys(S.users),...Object.keys(S.owners),...Object.keys(S.members)]);
-    const rank=p=>p.owner?0:p.member?1:2;
-    const list=[...ids].map(id=>({id,name:personName(id)!=="Unknown user"?personName(id):((S.members[id]&&S.members[id].name)||"Unknown user"),owner:!!S.owners[id],member:!!S.members[id],last:(S.users[id]&&S.users[id].lastSeen)||0}))
-      .sort((a,b)=>(rank(a)-rank(b))||a.name.localeCompare(b.name)).filter(p=>!q||p.name.toLowerCase().includes(q));
-    const link=S.invite?inviteURL(S.invite):"";
-    bar=`<div class="invite"><div><b>Invite link</b><small>Anyone who opens this link and signs in can log lunches and add scores. Share it only inside the team. Everyone else can only view.</small></div>
-      <div class="irow"><input id="invLink" readonly value="${esc(link||"Creating…")}" aria-label="Invite link"><button class="btn small primary" type="button" id="invCopy" ${link?"":"disabled"}>Copy</button><button class="btn small" type="button" id="invNew">New link</button></div></div>
-      <input type="search" id="admQ" placeholder="Search people" value="${esc(admQ)}" aria-label="Search people">`;
+    const ids=new Set([...Object.keys(S.users),...Object.keys(S.owners)]);
+    const list=[...ids].map(id=>({id,name:personName(id),owner:!!S.owners[id],last:(S.users[id]&&S.users[id].lastSeen)||0}))
+      .sort((a,b)=>(b.owner-a.owner)||a.name.localeCompare(b.name)).filter(p=>!q||p.name.toLowerCase().includes(q));
+    bar=`<input type="search" id="admQ" placeholder="Search people" value="${esc(admQ)}" aria-label="Search people"><span class="fine">People appear here after they sign in once.</span>`;
     rows=list.map(p=>{const me=p.id===S.myId;const lunches=S.lunches.filter(l=>l.createdBy===p.id).length;
-      const role=p.owner?`<span class="role own">Owner</span>`:p.member?`<span class="role mem">Member</span>`:`<span class="role">Viewer</span>`;
-      const acts=me?"":p.owner?`<button class="btn small" type="button" data-demote="${esc(p.id)}">Remove owner</button>`
-        :(p.member?`<button class="btn small del" type="button" data-unmember="${esc(p.id)}">Remove access</button>`:`<button class="btn small" type="button" data-member="${esc(p.id)}">Approve</button>`)+`<button class="btn small primary" type="button" data-promote="${esc(p.id)}">Make owner</button>`;
       return `<div class="arow noimg"><span>${miniHead(normAv(S.avatars[p.id],p.id))}</span>
-      <span><b>${esc(p.name)}${me?" (you)":""} ${role}</b><small>${lunches} lunch${lunches===1?"":"es"} logged${p.last?" · last seen "+new Date(p.last).toLocaleDateString():""}</small></span>
-      <span class="acts">${acts}</span></div>`;});
+      <span><b>${esc(p.name)}${me?" (you)":""} <span class="role ${p.owner?"own":""}">${p.owner?"Owner":"Member"}</span></b><small>${lunches} lunch${lunches===1?"":"es"} logged${p.last?" · last seen "+new Date(p.last).toLocaleDateString():""}</small></span>
+      <span class="acts">${me?"":p.owner?`<button class="btn small" type="button" data-demote="${esc(p.id)}">Remove owner</button>`:`<button class="btn small primary" type="button" data-promote="${esc(p.id)}">Make owner</button>`}</span></div>`;});
     if(!rows.length)rows=[`<div class="empty"><p style="margin:0">Nobody has signed in yet.</p></div>`];
   }
   $("admBar").innerHTML=bar;$("admList").innerHTML=rows.join("");
@@ -1584,11 +1570,6 @@ function renderAdmin(){
   const ds=$("admDelSel");if(ds)ds.onclick=()=>adminDelete([...admSel]);
   $("admList").querySelectorAll("[data-promote]").forEach(b=>b.onclick=()=>setOwner(b.dataset.promote,true));
   $("admList").querySelectorAll("[data-demote]").forEach(b=>b.onclick=()=>setOwner(b.dataset.demote,false));
-  $("admList").querySelectorAll("[data-member]").forEach(b=>b.onclick=()=>setMember(b.dataset.member,true));
-  $("admList").querySelectorAll("[data-unmember]").forEach(b=>b.onclick=()=>setMember(b.dataset.unmember,false));
-  const ic=$("invCopy");if(ic)ic.onclick=async()=>{try{await navigator.clipboard.writeText($("invLink").value);toast("Invite link copied");}catch(_){$("invLink").select();toast("Press Ctrl+C to copy");}};
-  const inw=$("invNew");if(inw)inw.onclick=async()=>{if(S.invite&&!(await confirmBox("Make a new invite link?","The old link will stop working for new people. Existing members keep their access.")))return;await newInvite();};
-  if(admTab==="people"&&S.isEditor&&S.invite===null&&!S._mkInvite){S._mkInvite=true;newInvite(true);}
 }
 async function adminDelete(ids){
   if(!ids.length)return;const isL=admTab==="lunches";const what=isL?(ids.length===1?"this lunch":ids.length+" lunches"):(ids.length===1?"this score":ids.length+" scores");
@@ -1601,14 +1582,6 @@ async function adminDelete(ids){
   toast(fail?`Deleted ${ok}, ${fail} failed. Check the Firestore rules are up to date.`:`Deleted ${ok} ${isL?"lunch"+(ok===1?"":"es"):"score"+(ok===1?"":"s")}`);
   if($("adminDlg").open)renderAdmin();
 }
-function inviteURL(code){return location.origin+location.pathname+"?join="+encodeURIComponent(code);}
-function randCode(){const a="abcdefghjkmnpqrstuvwxyz23456789";const r=new Uint32Array(12);crypto.getRandomValues(r);return [...r].map(x=>a[x%a.length]).join("");}
-async function newInvite(quiet){try{const code=randCode();await S.db.doc("config/invite").set({code,updatedAt:Date.now(),by:S.myId});S.invite=code;if(!quiet)toast("New invite link ready");renderAdmin();}
-  catch(_){toast("Couldn't create the invite link. Check the Firestore rules are up to date.");}}
-async function setMember(uid,make){const name=personName(uid);
-  if(!make&&!(await confirmBox(`Remove ${name}'s access?`,"They'll still be able to view the site, but can't log lunches or add scores until they use the invite link again.")))return;
-  try{if(make)await S.db.doc("members/"+uid).set({name,approvedBy:S.myId,joinedAt:Date.now()});else await S.db.doc("members/"+uid).delete();
-    toast(make?`${name} can now post`:`${name} can now only view`);}catch(_){toast("Couldn't change access. Check the Firestore rules are up to date.");}}
 async function setOwner(uid,make){
   const name=personName(uid);
   if(!(await confirmBox(make?`Make ${name} an owner?`:`Remove ${name} as owner?`,make?"Owners have full control: they can delete any lunch, photo or score and manage other owners.":"They'll still be able to log lunches and edit their own entries.")))return;
@@ -1616,12 +1589,6 @@ async function setOwner(uid,make){
     if(make)S.owners[uid]={name};else delete S.owners[uid];toast(make?`${name} is now an owner`:`${name} is no longer an owner`);renderAdmin();}
   catch(err){toast("Couldn't change owners. Check the Firestore rules are up to date.");}
 }
-/* ---------- invite link (?join=CODE) ---------- */
-(function(){try{const q=new URLSearchParams(location.search);const c=q.get("join");
-  if(c){sessionStorage.setItem("af-join",c.trim());q.delete("join");const rest=q.toString();history.replaceState(null,"",location.pathname+(rest?"?"+rest:"")+location.hash);}}catch(_){}})();
-function pendingJoin(){try{return sessionStorage.getItem("af-join")||"";}catch(_){return "";}}
-const canPost=()=>!!S.authUser&&(S.isEditor||S.isMember);
-function noAccessMsg(){toast(S.authUser?"Only invited members can post. Ask Kian Yew or another owner for the invite link.":"Sign in first.");}
 /* ================= live data ================= */
 function setLive(st){S.live=st;$("live").classList.toggle("on",st==="live");$("liveText").textContent={live:"Live",connecting:"Connecting…",slow:"Reconnecting…",unavailable:"Offline view"}[st]||st;}
 let FB=null;
@@ -1647,7 +1614,7 @@ $("avSave").onclick=async()=>{if(!S.db||!S.myId)return;const btn=$("avSave");btn
   finally{btn.disabled=false;}};
 function openAcct(){const u=S.authUser;if(!u)return;
   $("avBuilder").hidden=false;avDraft=normAv(S.avatars[u.uid],u.uid);renderBuilder();
-  $("acctText").textContent=(u.displayName||u.email||"Signed in")+(S.isEditor?" · Owner: full control, including clearing any lunch, photo or score.":!S.isMember?" · Viewer: you can browse everything. To log lunches and add scores, open the invite link from an owner.":" · Member: you can log lunches, edit or delete your own, and add scores.");
+  $("acctText").textContent=(u.displayName||u.email||"Signed in")+(S.isEditor?" · Owner: full control, including clearing any lunch, photo or score.":" · You can log lunches, edit or delete your own, and add scores.");
   $("acctUid").value=u.uid;$("acctDlg").showModal();}
 $("acctCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("acctUid").value);toast("User ID copied");}catch(_){$("acctUid").select();toast("Press Ctrl+C to copy");}};
 $("acctOut").onclick=async()=>{try{await FB.au.signOut(FB.auth);}catch(_){}$("acctDlg").close();toast("Signed out");};
@@ -1679,24 +1646,13 @@ async function start(){
       get:async()=>{const d=await fs.getDoc(fs.doc(fdb,p));return {exists:d.exists(),data:()=>d.data()};}
     })
   };
-  if(pendingJoin())setTimeout(()=>{if(!S.authUser)toast("You've been invited! Tap Sign in to join Applied Foodies.");},1200);
   au.onAuthStateChanged(auth,async u=>{
     S.authUser=u||null;S.myId=u?u.uid:null;S.isEditor=false;
-    S.isMember=false;
     if(u){try{const e=await fs.getDoc(fs.doc(fdb,"editors/"+u.uid));S.isEditor=e.exists();}catch(_){}
-      try{const m=await fs.getDoc(fs.doc(fdb,"members/"+u.uid));S.isMember=m.exists();}catch(_){}
-      const code=pendingJoin();
-      if(code&&!S.isMember&&!S.isEditor){
-        try{await fs.setDoc(fs.doc(fdb,"members/"+u.uid),{code,name:(u.displayName||"Someone").trim(),joinedAt:Date.now()});S.isMember=true;toast("Welcome to Applied Foodies! You can now log lunches and add scores.");}
-        catch(_){toast("That invite link has expired. Ask an owner for the latest one.");}
-        try{sessionStorage.removeItem("af-join");}catch(_){}
-      }
       try{await fs.setDoc(fs.doc(fdb,"users/"+u.uid),{name:(u.displayName||"Someone").trim(),lastSeen:Date.now()},{merge:true});}catch(_){}
       if(S.isEditor&&!S._ownerSubs){S._ownerSubs=true;
         fs.onSnapshot(fs.collection(fdb,"users"),snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.users=m;if($("adminDlg").open)renderAdmin();},e=>console.warn("users",e));
-        fs.onSnapshot(fs.collection(fdb,"editors"),snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.owners=m;if($("adminDlg").open)renderAdmin();},e=>console.warn("owners",e));
-        fs.onSnapshot(fs.collection(fdb,"members"),snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.members=m;if($("adminDlg").open)renderAdmin();},e=>console.warn("members",e));
-        fs.onSnapshot(fs.doc(fdb,"config/invite"),d=>{S.invite=d.exists()?d.data().code:null;if($("adminDlg").open)renderAdmin();},e=>console.warn("invite",e));}}
+        fs.onSnapshot(fs.collection(fdb,"editors"),snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data();});S.owners=m;if($("adminDlg").open)renderAdmin();},e=>console.warn("owners",e));}}
     renderAuth();renderPanel();renderTrail();
   });
   const got={l:false,r:false};

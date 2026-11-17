@@ -6,7 +6,7 @@ Come for the food, stay for the stories. A live map, food trail and photo wall f
 - **Our journey**: lunches logged, friends made, neighbourhoods explored, average score, leaderboard and friends list.
 - **Food trail**: every lunch in order, plus the photo wall.
 
-It's a static site (GitHub Pages) with Firebase (Firestore + Google sign-in) as the shared live database. Anyone with the link can view (pages are hidden from search engines). Only **members** can log lunches and add scores: people who open the owners' **invite link** (`?join=…`) and sign in with Google, or whom an owner approves. Owners have full control from the **Manage** panel: delete any lunch, photo or score, copy or reset the invite link, approve or remove members, and make other owners.
+It's a static site (GitHub Pages) with Firebase (Firestore + Google sign-in) as the shared live database. Anyone with the link can view. Anyone who signs in with Google can log lunches, edit or delete their own, and add scores out of 10. Owners have full control: they can delete any lunch, photo or score from the **Manage** panel and make other people owners.
 
 ## One-time setup
 
