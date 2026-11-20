@@ -348,6 +348,48 @@ body.noscroll{overflow:hidden}
 .tcard .badge{min-width:46px;padding:5px 7px}
 .tcard .badge b{font-size:17px}
 
+/* spin the wheel */
+.nav .sm{display:none}
+.spin{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start}
+.spincol{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.wheelwrap{position:relative;width:min(540px,100%);aspect-ratio:1;margin:0 auto}
+#wheel{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 14px 40px rgba(0,60,100,.25)}
+.wpointer{position:absolute;left:50%;top:-14px;width:40px;height:46px;margin-left:-20px;z-index:2;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
+.hub{position:absolute;left:50%;top:50%;width:21%;height:21%;transform:translate(-50%,-50%);border-radius:50%;border:5px solid #fff;background:var(--coral);color:#fff;font:700 clamp(13px,2.4vw,19px) var(--font-display);letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.hub:hover{filter:brightness(1.08)}
+.hub[disabled],.spinbtn[disabled]{cursor:wait}
+.spinbtn{align-self:center;font-size:17px;padding:13px 26px}
+.fchips{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 12px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.fchip[aria-pressed="true"]{background:var(--coral);border-color:var(--coral);color:#fff}
+.fchip small{font-weight:600;opacity:.8}
+.spinfilters h2{font-size:20px}
+.spinresult{min-height:180px}
+.spinresult .rk{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.spinresult h2{font-size:28px;margin:4px 0 6px;overflow-wrap:anywhere}
+.spinresult .addr{color:var(--muted);margin:0}
+.spinresult .note{background:#eaf6fc;border-left:4px solid var(--sun);padding:9px 12px;border-radius:0 10px 10px 0;margin:10px 0 0}
+.spinresult .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.spinresult .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.spinresult.pop-in{animation:popIn .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes popIn{from{transform:scale(.92);opacity:.3}to{transform:scale(1);opacity:1}}
+.arating{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;background:#fff6dd;color:#7a5200;border-radius:99px;padding:4px 10px}
+.arating i{width:9px;height:9px;border-radius:50%;background:#e8dcc0;display:inline-block}
+.arating i.on{background:#ffb81c}
+.spinmodes{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.shist{display:flex;flex-direction:column;gap:6px}
+.shist button{display:flex;justify-content:space-between;gap:10px;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:14px}
+.shist button:hover{border-color:var(--coral)}
+.shist small{color:var(--muted)}
+.spinm{position:absolute;left:0;top:0;pointer-events:none;transform-origin:50% 100%}
+.spinm .sp{width:44px;height:56px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.spinm .lb{position:absolute;left:46px;top:10px;white-space:nowrap;font:700 13px var(--font-map);color:#c4373c;text-shadow:-1.5px 0 #fff,1.5px 0 #fff,0 -1.5px #fff,0 1.5px #fff}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
+@media (max-width:900px){.spin{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.spinresult.pop-in{animation:none}.confetti{display:none}}
+
 /* forms */
 dialog{border:0;border-radius:22px;padding:0;background:#fff;color:var(--ink);width:min(660px,calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:0 20px 60px rgba(0,0,0,.25)}
 dialog::backdrop{background:rgba(29,35,51,.55)}
@@ -394,7 +436,8 @@ label.f textarea{min-height:84px;resize:vertical}
   .brand svg{width:36px;height:36px}
   .brand b{font-size:20px}
   .wm small{display:none}
-  .nav{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(3,1fr)}
+  .nav{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(4,1fr)}
+  .nav .lg{display:none}.nav .sm{display:inline}
   .nav a{text-align:center;padding:8px 4px;font-size:13.5px}
   #manageBtn,#authBtn{padding:7px 9px;border-radius:12px}
   #manageBtn .lbl,#authBtn .lbl{display:none}
@@ -486,8 +529,9 @@ label.f textarea{min-height:84px;resize:vertical}
     </a>
     <nav class="nav" aria-label="Pages">
       <a href="#map" id="navMap" aria-current="page">Map</a>
-      <a href="#journey" id="navJourney">Our journey</a>
-      <a href="#trail" id="navTrail">Food trail</a>
+      <a href="#journey" id="navJourney"><span class="lg">Our journey</span><span class="sm">Journey</span></a>
+      <a href="#spin" id="navSpin"><span class="lg">Spin the wheel</span><span class="sm">Spin</span></a>
+      <a href="#trail" id="navTrail"><span class="lg">Food trail</span><span class="sm">Trail</span></a>
     </nav>
     <span class="live" id="live"><i></i><span id="liveText">Connecting…</span></span>
     <button class="btn" id="manageBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span class="lbl">Manage</span></button>
@@ -549,6 +593,36 @@ label.f textarea{min-height:84px;resize:vertical}
     <div class="trail" id="trail"></div>
     <section class="card" style="margin-top:26px"><h2>The photo wall</h2><p class="fine" style="margin-top:-6px">Every photo we took with our lunch guests, newest first.</p><div class="wall" id="jWall"></div></section>
   </section>
+  </section>
+
+  <!-- PAGE: SPIN THE WHEEL -->
+  <section id="pageSpin" hidden>
+    <div class="jhead">
+      <div><h1>Can't decide? Spin the wheel!</h1>
+        <p>No recommendation from our guest, or they want us to pick? Let the wheel choose from Alderic's food recommendations within easy reach of the SOC.</p></div>
+    </div>
+    <div class="spin">
+      <div class="spincol">
+        <div class="wheelwrap">
+          <div class="wpointer" aria-hidden="true"><svg viewBox="0 0 40 46"><path d="M20 44 4 12A18 18 0 1 1 36 12z" fill="#e5484d" stroke="#fff" stroke-width="3"/><circle cx="20" cy="17" r="6" fill="#fff"/></svg></div>
+          <canvas id="wheel" role="img" aria-label="Spinning wheel of food places"></canvas>
+          <button type="button" class="hub" id="spinHub" aria-label="Spin the wheel">SPIN</button>
+        </div>
+        <button class="btn primary spinbtn" type="button" id="spinBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Spin the wheel</button>
+        <p class="fine" id="spinCount" style="text-align:center"></p>
+      </div>
+      <div class="spincol">
+        <div class="card spinfilters">
+          <h2>Set up the wheel</h2>
+          <div class="avrow"><span>Areas</span><div class="fchips" id="spinAreas" role="group" aria-label="Areas on the wheel"></div></div>
+          <div class="avrow"><span>Picks</span><div class="fchips" id="spinPicks" role="group" aria-label="Which picks"></div></div>
+          <p class="fine">Tip: "Closest" keeps it to Tampines, Changi and Loyang for a quick lunch.</p>
+        </div>
+        <div class="card spinresult" id="spinResult" aria-live="polite"></div>
+        <div class="card" id="spinHistoryCard" hidden><h2 style="font-size:18px">Earlier spins</h2><div class="shist" id="spinHistory"></div></div>
+      </div>
+    </div>
+    <p class="fine" style="margin-top:14px">Recommendations and ratings (0 to 3) are Alderic's. ⭐ marks his standout picks. Check opening hours before heading out.</p>
   </section>
 
   <!-- PAGE 2: JOURNEY -->
@@ -1141,9 +1215,11 @@ function moveMover(){
   if(fig&&Math.abs(dx)>1e-6){const left=dx<0;if(fig.classList.contains("flip")!==left)fig.classList.toggle("flip",left);}
 }
 (function loop(){ if(!reduceMotion&&S.selected&&S.page==="map")moveMover(); requestAnimationFrame(loop); })();
-MAP.hooks.afterDraw=()=>{positionMarkers();renderPop();};
+MAP.hooks.afterDraw=()=>{positionMarkers();renderPop();if(typeof positionSpinMarker==="function")positionSpinMarker();};
 function updateRoute(){
   const l=S.lunches.find(q=>q.id===S.selected);
+  if(!l&&SPIN&&SPIN.onMap){syncMarkers();return;}
+  if(l&&SPIN)SPIN.onMap=null;
   if(l&&l.lat!=null){MAP.setRoute(roadRoute(l).pts,S.mode);} else MAP.setRoute(null);
   syncMarkers();
 }
@@ -1379,13 +1455,181 @@ function renderTrail(){
   document.querySelectorAll("#trailSec .pola[data-id]").forEach(b=>b.onclick=()=>openLightbox(b.dataset.id));
   const nx=$("trailNext");if(nx)nx.onclick=()=>openForm(null);
 }
+
+/* ================= spin the wheel (Alderic's recommendations) ================= */
+const SPIN_AREAS=[["tcl","Tampines · Changi · Loyang"],["bedok","Bedok"],["seu","Siglap · Eunos · Ubi"],["kjc","Katong · Joo Chiat"],["gm","Geylang · MacPherson"]];
+// [name, short label for the wheel, address, area, dish, rating (null = not rated), star, note]
+const ALDERIC=[
+ ["Hua Kee Cantonese Chicken Rice","Hua Kee Chicken Rice","478 Tampines St 44","tcl","Chicken rice",1,false,""],
+ ["Tsuta","Tsuta Ramen","Jewel Changi Airport #02-242","tcl","Ramen",2,false,""],
+ ["Ramen-ya","Ramen-ya","East Village, 430 Upper Changi Rd #01-03","tcl","Ramen",3,true,"One of his top 3 ramen in Singapore: best noodles, best chashu and best value."],
+ ["Deng Wen Ji","Deng Wen Ji","East Village, 430 Upper Changi Rd #01-09","tcl","Wanton mee",3,false,""],
+ ["Loyang Way Big Prawn Noodles","Loyang Way Prawn Mee","64 Loyang Way","tcl","Prawn noodles",3,true,"His best prawn mee overall."],
+ ["Weng Kee Original Taste Ipoh Hor Fun","Weng Kee Ipoh Hor Fun","2 Changi Village Rd #01-19","tcl","Wanton mee",1,false,""],
+ ["Xing Ji Rou Cuo Mian","Xing Ji Rou Cuo Mian","85 Bedok North Rd #01-07","bedok","Soup bak chor mee",null,false,""],
+ ["Old Chai Chee Minced Meat Noodle","Old Chai Chee BCM","58 New Upper Changi Rd","bedok","Soup bak chor mee",null,false,""],
+ ["Ba Shu Sichuan Restaurant","Ba Shu Sichuan","219 Bedok Central #01-122","bedok","Sichuan / mala",3,true,"His best mala in Singapore."],
+ ["Hill Street Fried Kway Teow (Bedok South)","Hill St Fried Kway Teow","16 Bedok South Rd #01-41","bedok","Char kway teow",3,true,"One of his top 3 char kway teow."],
+ ["Gepuk Guys","Gepuk Guys","Jofa Coffeeshop, 531 Bedok North St 3 #01-680","bedok","Ayam gepuk",null,false,""],
+ ["58 Prawn Noodle and Minced Meat Noodle","58 Prawn Noodle","704 Bedok Reservoir Rd","bedok","Prawn noodles",2,false,""],
+ ["Geylang Lor 29 Hokkien Mee","Lor 29 Hokkien Mee","936 East Coast Rd","seu","Hokkien mee",2,false,""],
+ ["Le Cheng Kampong Hainanese Chicken Rice","Le Cheng Chicken Rice","389 Changi Rd","seu","Chicken rice",2,false,""],
+ ["Uncle George's Katong Laksa","Uncle George's Laksa","307 Changi Rd","seu","Katong laksa",2,false,""],
+ ["Famous Eunos Bak Chor Mee","Famous Eunos BCM","7 Eunos Cres","seu","Bak chor mee",1,false,""],
+ ["Da Sheng Minced Pork Noodle","Da Sheng BCM","Blk 3014 Ubi Rd 1","seu","Bak chor mee",1,false,""],
+ ["Beach Road Prawn Noodle House","Beach Rd Prawn Noodle","370 East Coast Rd","kjc","Prawn noodles",2,false,""],
+ ["Sin Heng Claypot Bak Koot Teh","Sin Heng Bak Kut Teh","439 Joo Chiat Rd","kjc","Bak kut teh",1,false,""],
+ ["Dickson Nasi Lemak","Dickson Nasi Lemak","320 Joo Chiat Rd","kjc","Nasi lemak",2,false,""],
+ ["Da Dong Prawn Noodles","Da Dong Prawn Noodles","354 Joo Chiat Rd","kjc","Prawn noodles",3,true,"His best prawn mee soup."],
+ ["Eng's Char Siew Wantan Mee","Eng's Wantan Mee","360 Joo Chiat Rd","kjc","Wanton mee",null,false,""],
+ ["Joo Chiat Ah Huat Wanton Noodle","Ah Huat Wanton Noodle","Dunman Food Centre #01-04","kjc","Wanton mee",1,false,""],
+ ["Dunman Road Char Siew Wanton Mee","Dunman Rd Wanton Mee","Dunman Food Centre #02-19","kjc","Wanton mee",null,false,""],
+ ["328 Katong Laksa","328 Katong Laksa","51 East Coast Rd","kjc","Katong laksa",1,false,""],
+ ["Janggut Laksa","Janggut Laksa","Roxy Square #01-64, 50 East Coast Rd","kjc","Katong laksa",3,true,"His best Katong laksa."],
+ ["Katong Mei Wei Chicken Rice","Katong Mei Wei","Katong Shopping Centre, 865 Mountbatten Rd","kjc","Chicken rice",2,false,"His best chicken rice soup."],
+ ["Lau Lim Mee Pok Kway Teow Mee","Lau Lim Mee Pok","248 Tanjong Katong Rd","kjc","Bak chor mee",0,false,""],
+ ["Ponggol Nasi Lemak","Ponggol Nasi Lemak","238 Tanjong Katong Rd","kjc","Nasi lemak",3,true,"One of his top 3 nasi lemak in Singapore."],
+ ["Koung's Wantan Mee","Koung's Wantan Mee","121 Geylang East Central","gm","Wanton mee",null,false,""],
+ ["Zhup Zhup","Zhup Zhup","458 MacPherson Rd","gm","Prawn noodles",3,false,""],
+ ["Swee Guan Hokkien Mee","Swee Guan Hokkien Mee","5 Lorong 29 Geylang","gm","Hokkien mee",3,true,"His best Hokkien mee in Singapore."]
+].map((r,i)=>({i,name:r[0],short:r[1],addr:r[2],area:r[3],dish:r[4],rating:r[5],star:r[6],note:r[7]}));
+var SPIN={areas:new Set(SPIN_AREAS.map(a=>a[0])),picks:"all",rot:0,spinning:false,result:null,history:[],geo:{},mode:"transit",onMap:null};
+function spinPool(){return ALDERIC.filter(p=>SPIN.areas.has(p.area)&&(SPIN.picks==="all"||(SPIN.picks==="star"&&p.star)||(SPIN.picks==="top"&&p.rating>=2)));}
+function renderSpinFilters(){
+  $("spinAreas").innerHTML=SPIN_AREAS.map(([k,l])=>`<button type="button" class="fchip" data-a="${k}" aria-pressed="${SPIN.areas.has(k)}">${esc(l)} <small>${ALDERIC.filter(p=>p.area===k).length}</small></button>`).join("")+
+    `<button type="button" class="fchip" data-a="closest" aria-pressed="${SPIN.areas.size===1&&SPIN.areas.has("tcl")}">Closest only</button><button type="button" class="fchip" data-a="all" aria-pressed="${SPIN.areas.size===SPIN_AREAS.length}">All areas</button>`;
+  $("spinPicks").innerHTML=[["all","All picks"],["top","Rated 2 and up"],["star","Only his ⭐ picks"]].map(([k,l])=>`<button type="button" class="fchip" data-p="${k}" aria-pressed="${SPIN.picks===k}">${l}</button>`).join("");
+  const n=spinPool().length;$("spinCount").textContent=n?`${n} place${n===1?"":"s"} on the wheel`:"No places match. Pick more areas.";
+  $("spinBtn").disabled=$("spinHub").disabled=n===0||SPIN.spinning;
+  if(!SPIN.result)$("spinResult").innerHTML=`<div class="rk">Ready when you are</div><h2>Where are we eating?</h2><p class="addr">Choose the areas, then hit spin. The wheel picks one of Alderic's recommendations at random.</p>`;
+}
+$("spinAreas").addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b||SPIN.spinning)return;const k=b.dataset.a;
+  if(k==="all")SPIN.areas=new Set(SPIN_AREAS.map(a=>a[0]));else if(k==="closest")SPIN.areas=new Set(["tcl"]);
+  else{if(SPIN.areas.has(k)){if(SPIN.areas.size>1)SPIN.areas.delete(k);}else SPIN.areas.add(k);}
+  renderSpinFilters();drawWheel();});
+$("spinPicks").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b||SPIN.spinning)return;SPIN.picks=b.dataset.p;renderSpinFilters();drawWheel();});
+const WHEEL_COLS=["#0078b4","#00b3e6","#569cbe","#3d3d40","#005c8a","#4fc3e8"];
+function drawWheel(){
+  const cv=$("wheel");if(!cv||$("pageSpin").hidden)return;const r=cv.getBoundingClientRect();if(!r.width)return;
+  const dpr=Math.min(window.devicePixelRatio||1,2);const size=Math.round(r.width*dpr);if(cv.width!==size){cv.width=size;cv.height=size;}
+  const ctx=cv.getContext("2d");const R=size/2;const pool=spinPool();const n=pool.length;
+  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,size,size);
+  ctx.save();ctx.translate(R,R);ctx.rotate(SPIN.rot);
+  if(!n){ctx.beginPath();ctx.arc(0,0,R-2,0,7);ctx.fillStyle="#e2edf3";ctx.fill();ctx.restore();return;}
+  const seg=2*Math.PI/n;
+  for(let i=0;i<n;i++){
+    const a0=-Math.PI/2+i*seg,a1=a0+seg;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R-2,a0,a1);ctx.closePath();
+    let col=WHEEL_COLS[i%WHEEL_COLS.length];if(n%WHEEL_COLS.length===1&&i===n-1)col=WHEEL_COLS[2];
+    ctx.fillStyle=col;ctx.fill();ctx.strokeStyle="rgba(255,255,255,.85)";ctx.lineWidth=Math.max(1,dpr*1.2);ctx.stroke();
+    ctx.save();ctx.rotate(a0+seg/2);ctx.textAlign="right";ctx.textBaseline="middle";
+    const fs=Math.max(9,Math.min(17,seg*R*0.42))*1;ctx.font=`700 ${fs}px "Plus Jakarta Sans", Arial`;
+    const light=col==="#00b3e6"||col==="#4fc3e8"||col==="#569cbe";ctx.fillStyle=light?"#06293d":"#fff";
+    let t=(pool[i].star?"★ ":"")+pool[i].short;const maxW=R*0.66;while(ctx.measureText(t).width>maxW&&t.length>4)t=t.slice(0,-2)+"…";
+    ctx.fillText(t,R-14*dpr,0);ctx.restore();
+  }
+  ctx.beginPath();ctx.arc(0,0,R-2,0,7);ctx.lineWidth=6*dpr;ctx.strokeStyle="#fff";ctx.stroke();
+  for(let i=0;i<n;i++){const a=-Math.PI/2+i*seg;ctx.beginPath();ctx.arc(Math.cos(a)*(R-9*dpr),Math.sin(a)*(R-9*dpr),3*dpr,0,7);ctx.fillStyle="#fff";ctx.fill();}
+  ctx.restore();
+}
+if(window.ResizeObserver)new ResizeObserver(()=>drawWheel()).observe($("wheel"));
+function spin(){
+  const pool=spinPool();if(SPIN.spinning||!pool.length)return;
+  SPIN.spinning=true;renderSpinFilters();
+  const n=pool.length,seg=2*Math.PI/n,pick=Math.floor(Math.random()*n);
+  // slice i's centre sits at angle -90° + (i+0.5)*seg + rot; we want it under the pointer (top, -90°)
+  const jitter=(Math.random()-.5)*seg*.7;
+  const cur=((SPIN.rot%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  let target=-(pick+0.5)*seg+jitter;target=((target%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  let delta=target-cur;if(delta<0)delta+=2*Math.PI;delta+=2*Math.PI*(reduceMotion?0:6);
+  const start=SPIN.rot,dur=reduceMotion?0:4800,t0=performance.now();
+  const done=()=>{SPIN.rot=start+delta;drawWheel();SPIN.spinning=false;showSpinResult(pool[pick]);renderSpinFilters();};
+  if(!dur){done();return;}
+  const step=t=>{const k=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-k,4);SPIN.rot=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else done();};
+  requestAnimationFrame(step);
+}
+$("spinBtn").onclick=spin;$("spinHub").onclick=spin;
+function ratingPill(r){if(r==null)return `<span class="arating">Alderic: not rated</span>`;return `<span class="arating" aria-label="Alderic's rating ${r} out of 3">Alderic ${[1,2,3].map(i=>`<i class="${i<=r?"on":""}"></i>`).join("")} ${r}/3</span>`;}
+function spinDirURL(p){const q=new URLSearchParams({api:"1",origin:SOC.addr,destination:p.name+", "+p.addr+", Singapore",travelmode:MODES[SPIN.mode].g});return "https://www.google.com/maps/dir/?"+q.toString();}
+async function geocodeSpin(p){
+  if(SPIN.geo[p.i]!==undefined)return SPIN.geo[p.i];
+  let g=null;
+  for(const q of [p.addr.replace(/#\S+/g,"").replace(/^Blk\s+/i,""),p.name]){
+    try{const res=await oneMapSearch(q);const hit=res.find(r=>r.LATITUDE&&r.LONGITUDE);if(hit){const lat=+hit.LATITUDE,lng=+hit.LONGITUDE;if(lat>1.2&&lat<1.48&&lng>103.6&&lng<104.1){g={lat,lng,postal:hit.POSTAL&&hit.POSTAL!=="NIL"?hit.POSTAL:""};break;}}}catch(_){}
+  }
+  SPIN.geo[p.i]=g;return g;
+}
+function showSpinResult(p,fromHistory){
+  SPIN.result=p;
+  if(!fromHistory){SPIN.history=[p,...SPIN.history.filter(h=>h.i!==p.i)].slice(0,6);if(!reduceMotion)confetti();}
+  const area=(SPIN_AREAS.find(a=>a[0]===p.area)||[,""])[1];
+  const box=$("spinResult");box.classList.remove("pop-in");void box.offsetWidth;box.classList.add("pop-in");
+  box.innerHTML=`<div class="rk">${p.star?"⭐ Alderic's standout pick":"The wheel has spoken"}</div>
+    <h2>${esc(p.name)}</h2><p class="addr">${esc(p.addr)}</p>
+    <div class="meta"><span class="tag t2">${esc(p.dish)}</span><span class="tag t3">${esc(area)}</span>${ratingPill(p.rating)}<span class="tag t4" id="spinDist">Working out distance…</span></div>
+    ${p.note?`<p class="note">${esc(p.note)}</p>`:""}
+    <div class="spinmodes" role="group" aria-label="Mode of transport">${MODE_ORDER.map(m=>`<button type="button" class="fchip" data-m="${m}" aria-pressed="${SPIN.mode===m}">${MODES[m].label}</button>`).join("")}</div>
+    <div class="acts">
+      <a class="btn blue" id="spinGo" href="${esc(spinDirURL(p))}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 21 3l-8 18-2-8z"/></svg>Directions from the SOC</a>
+      <button class="btn" type="button" id="spinMap">Show on map</button>
+      <button class="btn primary" type="button" id="spinLog">We went! Log this lunch</button>
+      <button class="btn ghost" type="button" id="spinAgain">Spin again</button>
+    </div>`;
+  box.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{SPIN.mode=b.dataset.m;box.querySelectorAll("[data-m]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.m===SPIN.mode));$("spinGo").href=spinDirURL(p);updateSpinDist(p);});
+  $("spinAgain").onclick=()=>{window.scrollTo({top:0,behavior:reduceMotion?"auto":"smooth"});spin();};
+  $("spinMap").onclick=()=>showSpinOnMap(p);
+  $("spinLog").onclick=()=>logFromSpin(p);
+  renderSpinHistory();updateSpinDist(p);
+  if(window.innerWidth<=900)box.scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"center"});
+}
+async function updateSpinDist(p){
+  const el=$("spinDist");const g=await geocodeSpin(p);if(SPIN.result!==p||!$("spinDist"))return;
+  if(!g){$("spinDist").textContent="Use Directions for travel time";return;}
+  const est=estimate(g,SPIN.mode);$("spinDist").textContent=`~${fmtMin(est.min)} by ${MODES[SPIN.mode].label.toLowerCase()} · ${est.km.toFixed(1)} km`;
+}
+function renderSpinHistory(){
+  const prev=SPIN.history.filter(h=>h!==SPIN.result);$("spinHistoryCard").hidden=!prev.length;
+  $("spinHistory").innerHTML=prev.map(h=>`<button type="button" data-i="${h.i}"><span>${h.star?"⭐ ":""}${esc(h.name)}<br><small>${esc(h.dish)} · ${esc(h.addr)}</small></span>${ratingPill(h.rating)}</button>`).join("");
+  $("spinHistory").querySelectorAll("button").forEach(b=>b.onclick=()=>showSpinResult(ALDERIC[+b.dataset.i],true));
+}
+function confetti(){const box=document.createElement("div");box.className="confetti";const cols=["#00b3e6","#0078b4","#ffb81c","#569cbe","#e5484d","#16c172"];
+  for(let i=0;i<70;i++){const c=document.createElement("i");c.style.left=Math.random()*100+"%";c.style.background=cols[i%cols.length];c.style.animationDelay=(Math.random()*.5)+"s";c.style.transform=`rotate(${Math.random()*360}deg)`;box.appendChild(c);}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),2400);}
+/* temporary map pin for a spun place (not saved anywhere) */
+let spinEl=null;
+function positionSpinMarker(){
+  if(!SPIN||!SPIN.onMap){if(spinEl)spinEl.style.display="none";return;}
+  if(!spinEl){spinEl=document.createElement("div");spinEl.className="spinm";MAP.mk.appendChild(spinEl);}
+  const {p,g}=SPIN.onMap;const sig=p.i+"";
+  if(spinEl.dataset.sig!==sig){spinEl.dataset.sig=sig;spinEl.innerHTML=`<svg class="sp" viewBox="0 0 44 56"><path d="M22 55S41 37 41 22A19 19 0 0 0 3 22c0 15 19 33 19 33z" fill="#e5484d" stroke="#fff" stroke-width="2"/><path d="m22 11 3.2 6.6 7.2 1-5.2 5 1.2 7.2L22 27.4l-6.4 3.4 1.2-7.2-5.2-5 7.2-1z" fill="#fff"/></svg><span class="lb">🎡 ${esc(p.short)}</span>`;}
+  const [x,y]=MAP.toScreen(U(g.lng),V(g.lat));spinEl.style.display="";spinEl.style.transform=`translate(${(x-22).toFixed(1)}px,${(y-56).toFixed(1)}px)`;
+}
+async function showSpinOnMap(p){
+  const btn=$("spinMap");if(btn){btn.disabled=true;btn.textContent="Finding it…";}
+  const g=await geocodeSpin(p);
+  if(btn){btn.disabled=false;btn.textContent="Show on map";}
+  if(!g){toast("Couldn't find that address on the map. Use Directions instead.");return;}
+  SPIN.onMap={p,g};S.selected=null;S.popOpen=false;
+  location.hash="map";
+  setTimeout(()=>{renderMapPage();$("gmap").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});
+    MAP.fitBounds([[U(SOC.lng),V(SOC.lat)],[U(g.lng),V(g.lat)]],90);MAP.setRoute(roadRoute(g).pts,"driving");},60);
+}
+async function logFromSpin(p){
+  openForm(null);
+  if(!$("lunchDlg").open)return; // not signed in / not allowed: openForm already explained
+  $("fName").value=p.name;$("fAddr").value=p.addr+", Singapore";$("fFood").value=p.dish;
+  const g=await geocodeSpin(p);
+  if(g){S.pickedLoc={lat:+g.lat.toFixed(6),lng:+g.lng.toFixed(6)};showLoc();$("fArea").value=guessArea(g.lat,g.lng);$("fFindStatus").classList.add("ok");$("fFindStatus").textContent="✓ Pinned from the wheel: "+p.name;}
+  else{$("fFind").value=p.addr.replace(/#\S+/g,"").trim();runFind();}
+}
 /* ================= routing between pages ================= */
 function route(){
-  const h=(location.hash||"#map").slice(1);S.page=h==="journey"?"journey":"map";
-  $("pageMap").hidden=S.page!=="map";$("pageJourney").hidden=S.page!=="journey";
+  const h=(location.hash||"#map").slice(1);S.page=h==="journey"?"journey":h==="spin"?"spin":"map";
+  $("pageMap").hidden=S.page!=="map";$("pageJourney").hidden=S.page!=="journey";$("pageSpin").hidden=S.page!=="spin";
+  $("navSpin").setAttribute("aria-current",S.page==="spin"?"page":"false");
   $("navMap").setAttribute("aria-current",S.page==="map"&&h!=="trail"?"page":"false");$("navTrail").setAttribute("aria-current",h==="trail"?"page":"false");
   $("navJourney").setAttribute("aria-current",S.page==="journey"?"page":"false");
   if(S.page==="journey"){renderJourney();window.scrollTo(0,0);}
+  else if(S.page==="spin"){renderSpinFilters();drawWheel();window.scrollTo(0,0);}
   else{MAP.req();renderTrail();if(h==="trail")requestAnimationFrame(()=>$("trailSec").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"}));}
 }
 window.addEventListener("hashchange",route);
